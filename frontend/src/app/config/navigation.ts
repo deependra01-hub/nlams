@@ -57,7 +57,7 @@ export const PRIMARY_NAV_ITEMS: NavItem[] = [
     path: "/gis",
     icon: Map,
     description: "Spatial operations",
-    available: false,
+    available: true,
   },
   {
     label: "Acquisition",

@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import { MainLayout } from "../components/layout/MainLayout";
 import { Login } from "../pages/auth/Login";
 import { NationalDashboard } from "../pages/dashboard/NationalDashboard";
+import { GISExplorer } from "../pages/gis/GISExplorer";
 import { LandVerification } from "../pages/land/LandVerification";
 import { ParcelDetails } from "../pages/land/ParcelDetails";
 import { ParcelList } from "../pages/land/ParcelList";
@@ -69,6 +70,16 @@ export function AppRoutes() {
             element={
               <RoleRoute allowedRoles={["central_admin", "state_officer", "district_officer", "field_officer"]}>
                 <LandVerification />
+              </RoleRoute>
+            }
+          />
+          <Route
+            path="/gis"
+            element={
+              <RoleRoute
+                allowedRoles={["central_admin", "state_officer", "district_officer", "project_agency_officer", "field_officer"]}
+              >
+                <GISExplorer />
               </RoleRoute>
             }
           />

@@ -25,6 +25,11 @@ const ROUTE_HEADERS: Record<string, RouteHeader> = {
     description: "Parcel review workflow for ownership and mutation confirmation.",
     breadcrumbs: [{ label: "Land Verification" }],
   },
+  "/gis": {
+    title: "GIS Explorer",
+    description: "Spatial operations, layer toggles, and feature review.",
+    breadcrumbs: [{ label: "GIS Explorer" }],
+  },
 };
 
 export function getRouteHeader(pathname: string): RouteHeader {
