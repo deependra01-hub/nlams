@@ -6,11 +6,13 @@ export function EmptyState({
   description,
   icon: Icon,
   actionLabel,
+  onAction,
 }: {
   title: string;
   description: string;
   icon: ComponentType<{ className?: string }>;
   actionLabel?: string;
+  onAction?: () => void;
 }) {
   return (
     <div className="nlams-muted-panel flex flex-col items-center gap-3 px-6 py-8 text-center">
@@ -21,7 +23,7 @@ export function EmptyState({
         <h3 className="text-base font-semibold text-slate-900">{title}</h3>
         <p className="max-w-sm text-sm text-slate-600">{description}</p>
       </div>
-      {actionLabel ? <Button>{actionLabel}</Button> : null}
+      {actionLabel ? <Button onClick={onAction}>{actionLabel}</Button> : null}
     </div>
   );
 }

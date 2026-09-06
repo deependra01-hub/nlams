@@ -43,7 +43,7 @@ export const PRIMARY_NAV_ITEMS: NavItem[] = [
     path: "/projects",
     icon: SquareKanban,
     description: "Acquisition portfolio",
-    available: false,
+    available: true,
   },
   {
     label: "Land Parcels",

@@ -2,6 +2,8 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import { MainLayout } from "../components/layout/MainLayout";
 import { Login } from "../pages/auth/Login";
 import { NationalDashboard } from "../pages/dashboard/NationalDashboard";
+import { ProjectDetails } from "../pages/projects/ProjectDetails";
+import { ProjectList } from "../pages/projects/ProjectList";
 import { NotFound } from "./NotFound";
 import { ProtectedRoute } from "./ProtectedRoute";
 import { RoleRoute } from "./RoleRoute";
@@ -20,6 +22,26 @@ export function AppRoutes() {
             element={
               <RoleRoute allowedRoles={["central_admin", "state_officer", "district_officer"]}>
                 <NationalDashboard />
+              </RoleRoute>
+            }
+          />
+          <Route
+            path="/projects"
+            element={
+              <RoleRoute
+                allowedRoles={["central_admin", "state_officer", "district_officer", "project_agency_officer"]}
+              >
+                <ProjectList />
+              </RoleRoute>
+            }
+          />
+          <Route
+            path="/projects/:projectId"
+            element={
+              <RoleRoute
+                allowedRoles={["central_admin", "state_officer", "district_officer", "project_agency_officer"]}
+              >
+                <ProjectDetails />
               </RoleRoute>
             }
           />

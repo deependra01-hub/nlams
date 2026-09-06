@@ -1,15 +1,17 @@
-import type { InputHTMLAttributes, TextareaHTMLAttributes } from "react";
+import type { ComponentType, InputHTMLAttributes, TextareaHTMLAttributes } from "react";
 
 export interface FieldProps {
   label: string;
   hint?: string;
   error?: string;
+  leadingIcon?: ComponentType<{ className?: string }>;
 }
 
 export function Input({
   label,
   hint,
   error,
+  leadingIcon: Icon,
   className = "",
   id,
   ...props
@@ -17,15 +19,21 @@ export function Input({
   return (
     <label className="block">
       <span className="mb-2 block text-sm font-semibold text-slate-800">{label}</span>
-      <input
-        id={id}
-        className={[
-          "nlams-control w-full px-3 py-2 text-sm shadow-sm transition placeholder:text-slate-400 focus-visible:ring-2 focus-visible:ring-gov-500",
-          error ? "border-red-300" : "",
-          className,
-        ].join(" ")}
-        {...props}
-      />
+      <div className="relative">
+        {Icon ? (
+          <Icon className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+        ) : null}
+        <input
+          id={id}
+          className={[
+            "nlams-control w-full py-2 text-sm shadow-sm transition placeholder:text-slate-400 focus-visible:ring-2 focus-visible:ring-gov-500",
+            Icon ? "pl-9 pr-3" : "px-3",
+            error ? "border-red-300" : "",
+            className,
+          ].join(" ")}
+          {...props}
+        />
+      </div>
       {error ? (
         <span className="mt-2 block text-xs font-medium text-red-700">{error}</span>
       ) : hint ? (

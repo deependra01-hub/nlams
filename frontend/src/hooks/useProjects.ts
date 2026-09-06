@@ -1,1 +1,1 @@
-export {};
+export { useProjects } from "../context/ProjectContext";

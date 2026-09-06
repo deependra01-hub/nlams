@@ -10,6 +10,11 @@ const ROUTE_HEADERS: Record<string, RouteHeader> = {
     description: "Operational shell preview for national land acquisition monitoring.",
     breadcrumbs: [{ label: "Dashboard" }],
   },
+  "/projects": {
+    title: "Projects",
+    description: "Portfolio overview for acquisition, award, and possession tracking.",
+    breadcrumbs: [{ label: "Projects" }],
+  },
 };
 
 export function getRouteHeader(pathname: string): RouteHeader {
