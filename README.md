@@ -8,6 +8,8 @@ The runnable app lives in [`frontend/`](./frontend).
 
 ## Run Locally
 
+From the repository root:
+
 ```bash
 cd frontend
 npm install
@@ -28,6 +30,17 @@ Run these from `frontend/`:
 npm run typecheck
 npm run lint
 npm run build
+```
+
+## Common Commands
+
+```bash
+cd frontend
+npm run dev
+npm run typecheck
+npm run lint
+npm run build
+npm run preview
 ```
 
 ## Preview Production Build

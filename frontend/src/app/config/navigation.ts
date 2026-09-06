@@ -85,7 +85,7 @@ export const PRIMARY_NAV_ITEMS: NavItem[] = [
     path: "/documents",
     icon: FileText,
     description: "Versioned evidence",
-    available: false,
+    available: true,
   },
   {
     label: "AI Intelligence",

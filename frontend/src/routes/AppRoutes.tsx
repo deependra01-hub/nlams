@@ -5,6 +5,8 @@ import { NationalDashboard } from "../pages/dashboard/NationalDashboard";
 import { GISExplorer } from "../pages/gis/GISExplorer";
 import { CompensationDashboard } from "../pages/compensation/CompensationDashboard";
 import { Payments } from "../pages/compensation/Payments";
+import { DocumentDetails } from "../pages/documents/DocumentDetails";
+import { DocumentRepository } from "../pages/documents/DocumentRepository";
 import { LandVerification } from "../pages/land/LandVerification";
 import { ParcelDetails } from "../pages/land/ParcelDetails";
 import { ParcelList } from "../pages/land/ParcelList";
@@ -66,6 +68,26 @@ export function AppRoutes() {
             element={
               <RoleRoute allowedRoles={["central_admin", "state_officer", "district_officer", "field_officer"]}>
                 <ParcelDetails />
+              </RoleRoute>
+            }
+          />
+          <Route
+            path="/documents"
+            element={
+              <RoleRoute
+                allowedRoles={["central_admin", "state_officer", "district_officer", "project_agency_officer", "field_officer", "reviewer"]}
+              >
+                <DocumentRepository />
+              </RoleRoute>
+            }
+          />
+          <Route
+            path="/documents/:documentId"
+            element={
+              <RoleRoute
+                allowedRoles={["central_admin", "state_officer", "district_officer", "project_agency_officer", "field_officer", "reviewer"]}
+              >
+                <DocumentDetails />
               </RoleRoute>
             }
           />
