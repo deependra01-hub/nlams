@@ -5,6 +5,12 @@ import { NationalDashboard } from "../pages/dashboard/NationalDashboard";
 import { GISExplorer } from "../pages/gis/GISExplorer";
 import { CompensationDashboard } from "../pages/compensation/CompensationDashboard";
 import { Payments } from "../pages/compensation/Payments";
+import { AcquisitionDashboard } from "../pages/acquisition/AcquisitionDashboard";
+import { Awards } from "../pages/acquisition/Awards";
+import { Hearings } from "../pages/acquisition/Hearings";
+import { Notifications as AcquisitionNotifications } from "../pages/acquisition/Notifications";
+import { Objections } from "../pages/acquisition/Objections";
+import { Possession } from "../pages/acquisition/Possession";
 import { DocumentDetails } from "../pages/documents/DocumentDetails";
 import { DocumentRepository } from "../pages/documents/DocumentRepository";
 import { LandVerification } from "../pages/land/LandVerification";
@@ -68,6 +74,54 @@ export function AppRoutes() {
             element={
               <RoleRoute allowedRoles={["central_admin", "state_officer", "district_officer", "field_officer"]}>
                 <ParcelDetails />
+              </RoleRoute>
+            }
+          />
+          <Route
+            path="/acquisition"
+            element={
+              <RoleRoute allowedRoles={["central_admin", "state_officer", "district_officer", "project_agency_officer", "field_officer"]}>
+                <AcquisitionDashboard />
+              </RoleRoute>
+            }
+          />
+          <Route
+            path="/acquisition/awards"
+            element={
+              <RoleRoute allowedRoles={["central_admin", "state_officer", "district_officer", "project_agency_officer", "field_officer"]}>
+                <Awards />
+              </RoleRoute>
+            }
+          />
+          <Route
+            path="/acquisition/hearings"
+            element={
+              <RoleRoute allowedRoles={["central_admin", "state_officer", "district_officer", "project_agency_officer", "field_officer"]}>
+                <Hearings />
+              </RoleRoute>
+            }
+          />
+          <Route
+            path="/acquisition/objections"
+            element={
+              <RoleRoute allowedRoles={["central_admin", "state_officer", "district_officer", "project_agency_officer", "field_officer"]}>
+                <Objections />
+              </RoleRoute>
+            }
+          />
+          <Route
+            path="/acquisition/possession"
+            element={
+              <RoleRoute allowedRoles={["central_admin", "state_officer", "district_officer", "project_agency_officer", "field_officer"]}>
+                <Possession />
+              </RoleRoute>
+            }
+          />
+          <Route
+            path="/acquisition/notifications"
+            element={
+              <RoleRoute allowedRoles={["central_admin", "state_officer", "district_officer", "project_agency_officer", "field_officer"]}>
+                <AcquisitionNotifications />
               </RoleRoute>
             }
           />

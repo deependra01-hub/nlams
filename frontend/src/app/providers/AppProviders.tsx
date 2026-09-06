@@ -1,5 +1,6 @@
 import type { PropsWithChildren } from "react";
 import { CompensationProvider } from "../../context/CompensationContext";
+import { AcquisitionProvider } from "../../context/AcquisitionContext";
 import { AuthProvider } from "../../context/AuthContext";
 import { DocumentProvider } from "../../context/DocumentContext";
 import { ParcelProvider } from "../../context/ParcelContext";
@@ -11,11 +12,13 @@ export function AppProviders({ children }: PropsWithChildren) {
     <AuthProvider>
       <ProjectProvider>
         <DocumentProvider>
-          <ParcelProvider>
-            <CompensationProvider>
-              <RehabilitationProvider>{children}</RehabilitationProvider>
-            </CompensationProvider>
-          </ParcelProvider>
+          <AcquisitionProvider>
+            <ParcelProvider>
+              <CompensationProvider>
+                <RehabilitationProvider>{children}</RehabilitationProvider>
+              </CompensationProvider>
+            </ParcelProvider>
+          </AcquisitionProvider>
         </DocumentProvider>
       </ProjectProvider>
     </AuthProvider>

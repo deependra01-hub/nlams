@@ -64,7 +64,7 @@ export const PRIMARY_NAV_ITEMS: NavItem[] = [
     path: "/acquisition",
     icon: Workflow,
     description: "Lifecycle tracking",
-    available: false,
+    available: true,
   },
   {
     label: "Compensation",

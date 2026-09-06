@@ -56,6 +56,51 @@ const ROUTE_HEADERS: Record<string, RouteHeader> = {
       { label: "Families" },
     ],
   },
+  "/acquisition": {
+    title: "Acquisition",
+    description: "Acquisition workflow overview with surveys, hearings, awards, and possession.",
+    breadcrumbs: [{ label: "Acquisition" }],
+  },
+  "/acquisition/awards": {
+    title: "Awards",
+    description: "Award notice review and issuance tracking.",
+    breadcrumbs: [
+      { label: "Acquisition", to: "/acquisition" },
+      { label: "Awards" },
+    ],
+  },
+  "/acquisition/hearings": {
+    title: "Hearings",
+    description: "Hearing calendar and objection resolution workflow.",
+    breadcrumbs: [
+      { label: "Acquisition", to: "/acquisition" },
+      { label: "Hearings" },
+    ],
+  },
+  "/acquisition/objections": {
+    title: "Objections",
+    description: "Objection queue and review status tracking.",
+    breadcrumbs: [
+      { label: "Acquisition", to: "/acquisition" },
+      { label: "Objections" },
+    ],
+  },
+  "/acquisition/possession": {
+    title: "Possession",
+    description: "Possession scheduling and handover preparation.",
+    breadcrumbs: [
+      { label: "Acquisition", to: "/acquisition" },
+      { label: "Possession" },
+    ],
+  },
+  "/acquisition/notifications": {
+    title: "Notifications",
+    description: "Notice distribution and operational alert tracking.",
+    breadcrumbs: [
+      { label: "Acquisition", to: "/acquisition" },
+      { label: "Notifications" },
+    ],
+  },
   "/documents": {
     title: "Documents",
     description: "Versioned evidence repository for acquisition, compensation, and rehabilitation.",
