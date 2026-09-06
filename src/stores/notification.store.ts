@@ -6,6 +6,6 @@ interface NotificationState {
 }
 
 export const useNotificationStore = create<NotificationState>((set) => ({
-  unreadCount: 0,
+  unreadCount: 7,
   setUnreadCount: (unreadCount) => set({ unreadCount }),
 }));

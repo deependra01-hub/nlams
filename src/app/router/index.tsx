@@ -7,8 +7,9 @@ export function AppRouter() {
   return (
     <Routes>
       <Route element={<AppShell />}>
-        <Route path="/" element={<Navigate to="/foundation" replace />} />
-        <Route path="/foundation" element={<FoundationPage />} />
+        <Route path="/" element={<Navigate to="/dashboard" replace />} />
+        <Route path="/dashboard" element={<FoundationPage />} />
+        <Route path="/foundation" element={<Navigate to="/dashboard" replace />} />
       </Route>
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
