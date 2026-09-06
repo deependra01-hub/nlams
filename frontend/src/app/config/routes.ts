@@ -114,6 +114,72 @@ const ROUTE_HEADERS: Record<string, RouteHeader> = {
       { label: "Details" },
     ],
   },
+  "/ai": {
+    title: "AI Intelligence",
+    description: "Risk scoring and next-action suggestions across the acquisition workflow.",
+    breadcrumbs: [{ label: "AI Intelligence" }],
+  },
+  "/simulator": {
+    title: "Impact Simulator",
+    description: "Scenario comparison and planning workspace.",
+    breadcrumbs: [{ label: "Impact Simulator" }],
+  },
+  "/simulator/create": {
+    title: "Create Scenario",
+    description: "Draft a new scenario for impact planning.",
+    breadcrumbs: [
+      { label: "Impact Simulator", to: "/simulator" },
+      { label: "Create Scenario" },
+    ],
+  },
+  "/reports": {
+    title: "Reports",
+    description: "Operational summaries and export-ready work products.",
+    breadcrumbs: [{ label: "Reports" }],
+  },
+  "/reports/analytics": {
+    title: "Analytics",
+    description: "Compact performance view for the current demo data.",
+    breadcrumbs: [
+      { label: "Reports", to: "/reports" },
+      { label: "Analytics" },
+    ],
+  },
+  "/grievances": {
+    title: "Grievances",
+    description: "Complaint management and resolution workflow.",
+    breadcrumbs: [{ label: "Grievances" }],
+  },
+  "/notifications": {
+    title: "Notifications",
+    description: "Operational alerts and preferences.",
+    breadcrumbs: [{ label: "Notifications" }],
+  },
+  "/admin/users": {
+    title: "Users",
+    description: "User account management.",
+    breadcrumbs: [{ label: "Administration", to: "/admin/users" }, { label: "Users" }],
+  },
+  "/admin/roles": {
+    title: "Roles",
+    description: "Role configuration and allocation.",
+    breadcrumbs: [{ label: "Administration", to: "/admin/users" }, { label: "Roles" }],
+  },
+  "/admin/permissions": {
+    title: "Permissions",
+    description: "Access control matrix.",
+    breadcrumbs: [{ label: "Administration", to: "/admin/users" }, { label: "Permissions" }],
+  },
+  "/admin/data-sources": {
+    title: "Data Sources",
+    description: "Integration health and sync status.",
+    breadcrumbs: [{ label: "Administration", to: "/admin/users" }, { label: "Data Sources" }],
+  },
+  "/admin/audit-logs": {
+    title: "Audit Logs",
+    description: "Recent tracked actions and system history.",
+    breadcrumbs: [{ label: "Administration", to: "/admin/users" }, { label: "Audit Logs" }],
+  },
 };
 
 export function getRouteHeader(pathname: string): RouteHeader {

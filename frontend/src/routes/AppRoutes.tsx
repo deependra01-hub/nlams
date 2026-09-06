@@ -5,6 +5,7 @@ import { NationalDashboard } from "../pages/dashboard/NationalDashboard";
 import { GISExplorer } from "../pages/gis/GISExplorer";
 import { CompensationDashboard } from "../pages/compensation/CompensationDashboard";
 import { Payments } from "../pages/compensation/Payments";
+import { AIIntelligence } from "../pages/ai/AIIntelligence";
 import { AcquisitionDashboard } from "../pages/acquisition/AcquisitionDashboard";
 import { Awards } from "../pages/acquisition/Awards";
 import { Hearings } from "../pages/acquisition/Hearings";
@@ -18,8 +19,21 @@ import { ParcelDetails } from "../pages/land/ParcelDetails";
 import { ParcelList } from "../pages/land/ParcelList";
 import { Families } from "../pages/rehabilitation/Families";
 import { RRDashboard } from "../pages/rehabilitation/RRDashboard";
+import { AuditLogs as AdminAuditLogs } from "../pages/admin/AuditLogs";
+import { DataSources } from "../pages/admin/DataSources";
+import { Permissions as AdminPermissions } from "../pages/admin/Permissions";
+import { Roles } from "../pages/admin/Roles";
+import { Users } from "../pages/admin/Users";
+import { GrievanceDetails } from "../pages/grievances/GrievanceDetails";
+import { GrievanceList } from "../pages/grievances/GrievanceList";
+import { Notifications } from "../pages/notifications/Notifications";
+import { Reports } from "../pages/reports/Reports";
+import { Analytics } from "../pages/reports/Analytics";
 import { ProjectDetails } from "../pages/projects/ProjectDetails";
 import { ProjectList } from "../pages/projects/ProjectList";
+import { ScenarioCreate } from "../pages/simulator/ScenarioCreate";
+import { ScenarioDetails } from "../pages/simulator/ScenarioDetails";
+import { Simulator } from "../pages/simulator/Simulator";
 import { NotFound } from "./NotFound";
 import { ProtectedRoute } from "./ProtectedRoute";
 import { RoleRoute } from "./RoleRoute";
@@ -176,6 +190,118 @@ export function AppRoutes() {
             element={
               <RoleRoute allowedRoles={["central_admin", "state_officer", "district_officer"]}>
                 <Payments />
+              </RoleRoute>
+            }
+          />
+          <Route
+            path="/ai"
+            element={
+              <RoleRoute allowedRoles={["central_admin", "state_officer", "district_officer", "project_agency_officer", "field_officer", "reviewer"]}>
+                <AIIntelligence />
+              </RoleRoute>
+            }
+          />
+          <Route
+            path="/simulator"
+            element={
+              <RoleRoute allowedRoles={["central_admin", "state_officer", "district_officer", "project_agency_officer", "field_officer"]}>
+                <Simulator />
+              </RoleRoute>
+            }
+          />
+          <Route
+            path="/simulator/create"
+            element={
+              <RoleRoute allowedRoles={["central_admin", "state_officer", "district_officer", "project_agency_officer", "field_officer"]}>
+                <ScenarioCreate />
+              </RoleRoute>
+            }
+          />
+          <Route
+            path="/simulator/:scenarioId"
+            element={
+              <RoleRoute allowedRoles={["central_admin", "state_officer", "district_officer", "project_agency_officer", "field_officer"]}>
+                <ScenarioDetails />
+              </RoleRoute>
+            }
+          />
+          <Route
+            path="/reports"
+            element={
+              <RoleRoute allowedRoles={["central_admin", "state_officer", "district_officer", "project_agency_officer", "reviewer"]}>
+                <Reports />
+              </RoleRoute>
+            }
+          />
+          <Route
+            path="/reports/analytics"
+            element={
+              <RoleRoute allowedRoles={["central_admin", "state_officer", "district_officer", "project_agency_officer", "reviewer"]}>
+                <Analytics />
+              </RoleRoute>
+            }
+          />
+          <Route
+            path="/grievances"
+            element={
+              <RoleRoute allowedRoles={["central_admin", "state_officer", "district_officer", "field_officer", "reviewer"]}>
+                <GrievanceList />
+              </RoleRoute>
+            }
+          />
+          <Route
+            path="/grievances/:grievanceId"
+            element={
+              <RoleRoute allowedRoles={["central_admin", "state_officer", "district_officer", "field_officer", "reviewer"]}>
+                <GrievanceDetails />
+              </RoleRoute>
+            }
+          />
+          <Route
+            path="/notifications"
+            element={
+              <RoleRoute allowedRoles={["central_admin", "state_officer", "district_officer", "project_agency_officer", "field_officer", "reviewer"]}>
+                <Notifications />
+              </RoleRoute>
+            }
+          />
+          <Route
+            path="/admin/users"
+            element={
+              <RoleRoute allowedRoles={["central_admin"]}>
+                <Users />
+              </RoleRoute>
+            }
+          />
+          <Route
+            path="/admin/roles"
+            element={
+              <RoleRoute allowedRoles={["central_admin"]}>
+                <Roles />
+              </RoleRoute>
+            }
+          />
+          <Route
+            path="/admin/permissions"
+            element={
+              <RoleRoute allowedRoles={["central_admin"]}>
+                <AdminPermissions />
+              </RoleRoute>
+            }
+          />
+          <Route
+            path="/admin/data-sources"
+            element={
+              <RoleRoute allowedRoles={["central_admin"]}>
+                <DataSources />
+              </RoleRoute>
+            }
+          />
+          <Route
+            path="/admin/audit-logs"
+            element={
+              <RoleRoute allowedRoles={["central_admin"]}>
+                <AdminAuditLogs />
               </RoleRoute>
             }
           />

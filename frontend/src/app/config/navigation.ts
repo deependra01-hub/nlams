@@ -92,42 +92,42 @@ export const PRIMARY_NAV_ITEMS: NavItem[] = [
     path: "/ai",
     icon: Radar,
     description: "Risk prediction and explanation",
-    available: false,
+    available: true,
   },
   {
     label: "Impact Simulator",
     path: "/simulator",
     icon: Sparkles,
     description: "Scenario comparison",
-    available: false,
+    available: true,
   },
   {
     label: "Reports",
     path: "/reports",
     icon: ChartColumnBig,
     description: "Exports and summaries",
-    available: false,
+    available: true,
   },
   {
     label: "Grievances",
     path: "/grievances",
     icon: NotebookPen,
     description: "Issue tracking",
-    available: false,
+    available: true,
   },
   {
     label: "Notifications",
     path: "/notifications",
     icon: Bell,
     description: "Operational alerts",
-    available: false,
+    available: true,
   },
   {
     label: "Administration",
     path: "/admin/users",
     icon: Users,
     description: "Users and permissions",
-    available: false,
+    available: true,
   },
 ];
 
@@ -151,7 +151,7 @@ export const SECONDARY_NAV_ITEMS: NavItem[] = [
     path: "/audit",
     icon: Workflow,
     description: "Immutable event history",
-    available: false,
+    available: true,
   },
 ];
 
