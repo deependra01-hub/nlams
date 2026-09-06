@@ -8,6 +8,8 @@ import { Payments } from "../pages/compensation/Payments";
 import { LandVerification } from "../pages/land/LandVerification";
 import { ParcelDetails } from "../pages/land/ParcelDetails";
 import { ParcelList } from "../pages/land/ParcelList";
+import { Families } from "../pages/rehabilitation/Families";
+import { RRDashboard } from "../pages/rehabilitation/RRDashboard";
 import { ProjectDetails } from "../pages/projects/ProjectDetails";
 import { ProjectList } from "../pages/projects/ProjectList";
 import { NotFound } from "./NotFound";
@@ -98,6 +100,22 @@ export function AppRoutes() {
             element={
               <RoleRoute allowedRoles={["central_admin", "state_officer", "district_officer"]}>
                 <Payments />
+              </RoleRoute>
+            }
+          />
+          <Route
+            path="/rr"
+            element={
+              <RoleRoute allowedRoles={["central_admin", "state_officer", "district_officer", "field_officer"]}>
+                <RRDashboard />
+              </RoleRoute>
+            }
+          />
+          <Route
+            path="/rr/families"
+            element={
+              <RoleRoute allowedRoles={["central_admin", "state_officer", "district_officer", "field_officer"]}>
+                <Families />
               </RoleRoute>
             }
           />

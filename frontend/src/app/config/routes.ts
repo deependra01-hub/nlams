@@ -43,6 +43,19 @@ const ROUTE_HEADERS: Record<string, RouteHeader> = {
       { label: "Payments" },
     ],
   },
+  "/rr": {
+    title: "R&R",
+    description: "Rehabilitation and resettlement overview.",
+    breadcrumbs: [{ label: "R&R" }],
+  },
+  "/rr/families": {
+    title: "R&R Families",
+    description: "Family rehabilitation records and progress tracking.",
+    breadcrumbs: [
+      { label: "R&R", to: "/rr" },
+      { label: "Families" },
+    ],
+  },
 };
 
 export function getRouteHeader(pathname: string): RouteHeader {

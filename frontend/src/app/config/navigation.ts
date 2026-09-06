@@ -78,7 +78,7 @@ export const PRIMARY_NAV_ITEMS: NavItem[] = [
     path: "/rr",
     icon: ShieldCheck,
     description: "Families and rehabilitation",
-    available: false,
+    available: true,
   },
   {
     label: "Documents",
@@ -137,6 +137,13 @@ export const SECONDARY_NAV_ITEMS: NavItem[] = [
     path: "/land-verification",
     icon: ShieldCheck,
     description: "Parcel review and approval",
+    available: true,
+  },
+  {
+    label: "R&R Families",
+    path: "/rr/families",
+    icon: Users,
+    description: "Family rehab records",
     available: true,
   },
   {
