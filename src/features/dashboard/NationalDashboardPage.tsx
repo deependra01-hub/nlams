@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import {
   AlertTriangle,
   CheckCircle2,
@@ -21,9 +22,8 @@ import { Tabs } from "../../components/common/Tabs";
 import { getApiBaseUrl } from "../../services/api";
 import { APP_NAME, STATUS_META } from "../../constants/status";
 import { RISK_LEVELS, SEMANTIC_COLORS, SEMANTIC_SURFACES, TRUST_LEVELS } from "../../constants/theme";
-import type { ReactNode } from "react";
 
-export function FoundationPage() {
+export function NationalDashboardPage() {
   return (
     <div className="grid gap-4 xl:grid-cols-[1.35fr_0.95fr]">
       <section className="grid gap-4">
@@ -116,7 +116,17 @@ export function FoundationPage() {
                       className="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-3 py-2"
                     >
                       <span className="text-sm font-medium text-slate-700">{status.label}</span>
-                      <Badge tone={status.key === "verified" ? "success" : status.key === "blocked" ? "danger" : status.key === "pending" ? "warning" : "neutral"}>
+                      <Badge
+                        tone={
+                          status.key === "verified"
+                            ? "success"
+                            : status.key === "blocked"
+                              ? "danger"
+                              : status.key === "pending"
+                                ? "warning"
+                                : "neutral"
+                        }
+                      >
                         {status.label}
                       </Badge>
                     </div>
@@ -243,7 +253,10 @@ export function FoundationPage() {
           </div>
         </AppCard>
 
-        <AppCard title="Risk and Trust Language" description="The UI talks about model risk and source confidence consistently.">
+        <AppCard
+          title="Risk and Trust Language"
+          description="The UI talks about model risk and source confidence consistently."
+        >
           <div className="grid gap-4">
             <div className="grid gap-2">
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
@@ -251,7 +264,16 @@ export function FoundationPage() {
               </p>
               <div className="flex flex-wrap gap-2">
                 {RISK_LEVELS.map((level) => (
-                  <Badge key={level.key} tone={level.key === "low" ? "success" : level.key === "moderate" ? "warning" : level.key === "high" ? "danger" : "danger"}>
+                  <Badge
+                    key={level.key}
+                    tone={
+                      level.key === "low"
+                        ? "success"
+                        : level.key === "moderate"
+                          ? "warning"
+                          : "danger"
+                    }
+                  >
                     {level.label}
                   </Badge>
                 ))}

@@ -9,10 +9,10 @@ export function NotFoundPage() {
           The requested route does not exist yet in this phase.
         </p>
         <Link
-          to="/foundation"
+          to="/dashboard"
           className="mt-6 inline-flex rounded-xl bg-gov-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-gov-800 focus:outline-none focus:ring-2 focus:ring-gov-500 focus:ring-offset-2"
         >
-          Return to foundation
+          Return to dashboard
         </Link>
       </div>
     </div>
