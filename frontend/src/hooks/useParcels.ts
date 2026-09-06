@@ -1,1 +1,1 @@
-export {};
+export { useParcels } from "../context/ParcelContext";

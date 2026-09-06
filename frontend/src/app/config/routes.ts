@@ -15,6 +15,16 @@ const ROUTE_HEADERS: Record<string, RouteHeader> = {
     description: "Portfolio overview for acquisition, award, and possession tracking.",
     breadcrumbs: [{ label: "Projects" }],
   },
+  "/parcels": {
+    title: "Parcels",
+    description: "Parcel registry and land record verification overview.",
+    breadcrumbs: [{ label: "Parcels" }],
+  },
+  "/land-verification": {
+    title: "Land Verification",
+    description: "Parcel review workflow for ownership and mutation confirmation.",
+    breadcrumbs: [{ label: "Land Verification" }],
+  },
 };
 
 export function getRouteHeader(pathname: string): RouteHeader {

@@ -2,6 +2,9 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import { MainLayout } from "../components/layout/MainLayout";
 import { Login } from "../pages/auth/Login";
 import { NationalDashboard } from "../pages/dashboard/NationalDashboard";
+import { LandVerification } from "../pages/land/LandVerification";
+import { ParcelDetails } from "../pages/land/ParcelDetails";
+import { ParcelList } from "../pages/land/ParcelList";
 import { ProjectDetails } from "../pages/projects/ProjectDetails";
 import { ProjectList } from "../pages/projects/ProjectList";
 import { NotFound } from "./NotFound";
@@ -42,6 +45,30 @@ export function AppRoutes() {
                 allowedRoles={["central_admin", "state_officer", "district_officer", "project_agency_officer"]}
               >
                 <ProjectDetails />
+              </RoleRoute>
+            }
+          />
+          <Route
+            path="/parcels"
+            element={
+              <RoleRoute allowedRoles={["central_admin", "state_officer", "district_officer", "field_officer"]}>
+                <ParcelList />
+              </RoleRoute>
+            }
+          />
+          <Route
+            path="/parcels/:parcelId"
+            element={
+              <RoleRoute allowedRoles={["central_admin", "state_officer", "district_officer", "field_officer"]}>
+                <ParcelDetails />
+              </RoleRoute>
+            }
+          />
+          <Route
+            path="/land-verification"
+            element={
+              <RoleRoute allowedRoles={["central_admin", "state_officer", "district_officer", "field_officer"]}>
+                <LandVerification />
               </RoleRoute>
             }
           />

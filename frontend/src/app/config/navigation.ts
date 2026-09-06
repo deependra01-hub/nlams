@@ -50,7 +50,7 @@ export const PRIMARY_NAV_ITEMS: NavItem[] = [
     path: "/parcels",
     icon: Landmark,
     description: "Parcel registry",
-    available: false,
+    available: true,
   },
   {
     label: "GIS Explorer",
@@ -132,6 +132,13 @@ export const PRIMARY_NAV_ITEMS: NavItem[] = [
 ];
 
 export const SECONDARY_NAV_ITEMS: NavItem[] = [
+  {
+    label: "Land Verification",
+    path: "/land-verification",
+    icon: ShieldCheck,
+    description: "Parcel review and approval",
+    available: true,
+  },
   {
     label: "Audit Logs",
     path: "/audit",
