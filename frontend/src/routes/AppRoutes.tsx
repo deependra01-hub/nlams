@@ -3,6 +3,8 @@ import { MainLayout } from "../components/layout/MainLayout";
 import { Login } from "../pages/auth/Login";
 import { NationalDashboard } from "../pages/dashboard/NationalDashboard";
 import { GISExplorer } from "../pages/gis/GISExplorer";
+import { CompensationDashboard } from "../pages/compensation/CompensationDashboard";
+import { Payments } from "../pages/compensation/Payments";
 import { LandVerification } from "../pages/land/LandVerification";
 import { ParcelDetails } from "../pages/land/ParcelDetails";
 import { ParcelList } from "../pages/land/ParcelList";
@@ -80,6 +82,22 @@ export function AppRoutes() {
                 allowedRoles={["central_admin", "state_officer", "district_officer", "project_agency_officer", "field_officer"]}
               >
                 <GISExplorer />
+              </RoleRoute>
+            }
+          />
+          <Route
+            path="/compensation"
+            element={
+              <RoleRoute allowedRoles={["central_admin", "state_officer", "district_officer"]}>
+                <CompensationDashboard />
+              </RoleRoute>
+            }
+          />
+          <Route
+            path="/compensation/payments"
+            element={
+              <RoleRoute allowedRoles={["central_admin", "state_officer", "district_officer"]}>
+                <Payments />
               </RoleRoute>
             }
           />

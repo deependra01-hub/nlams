@@ -30,6 +30,19 @@ const ROUTE_HEADERS: Record<string, RouteHeader> = {
     description: "Spatial operations, layer toggles, and feature review.",
     breadcrumbs: [{ label: "GIS Explorer" }],
   },
+  "/compensation": {
+    title: "Compensation",
+    description: "Award review, verification, and payment readiness workflow.",
+    breadcrumbs: [{ label: "Compensation" }],
+  },
+  "/compensation/payments": {
+    title: "Payments",
+    description: "Disbursement queue and payment tracking.",
+    breadcrumbs: [
+      { label: "Compensation", to: "/compensation" },
+      { label: "Payments" },
+    ],
+  },
 };
 
 export function getRouteHeader(pathname: string): RouteHeader {

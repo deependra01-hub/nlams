@@ -71,7 +71,7 @@ export const PRIMARY_NAV_ITEMS: NavItem[] = [
     path: "/compensation",
     icon: ReceiptText,
     description: "Assessments and payouts",
-    available: false,
+    available: true,
   },
   {
     label: "R&R",
