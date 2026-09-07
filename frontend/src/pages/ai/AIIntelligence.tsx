@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { AppCard } from "../../components/common/AppCard";
 import { Badge } from "../../components/common/Badge";
 import { Button } from "../../components/common/Button";
@@ -64,9 +64,7 @@ export function AIIntelligence() {
                 <Button variant="secondary" onClick={() => setActiveId(insight.id)}>
                   Heads up
                 </Button>
-                <Link to={insight.route} className="inline-flex">
-                  <Button>Open</Button>
-                </Link>
+                <Button onClick={() => navigate(insight.route)}>Open</Button>
               </div>
             </div>
           </article>

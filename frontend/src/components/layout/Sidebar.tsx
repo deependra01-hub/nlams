@@ -67,7 +67,7 @@ export function Sidebar({
 
         <div className="border-t border-slate-200 pt-4">
           <p className={`px-3 text-xs font-semibold uppercase tracking-[0.18em] text-slate-500 ${collapsed && !mobile ? "sr-only" : ""}`}>
-            Upcoming modules
+            Quick links
           </p>
           <div className="mt-2 space-y-1">
             {SECONDARY_NAV_ITEMS.map((item) => (
@@ -76,7 +76,6 @@ export function Sidebar({
                 item={item}
                 active={location.pathname === item.path}
                 collapsed={collapsed && !mobile}
-                disabled
               />
             ))}
           </div>

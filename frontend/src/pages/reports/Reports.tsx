@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { AppCard } from "../../components/common/AppCard";
 import { Badge } from "../../components/common/Badge";
 import { Button } from "../../components/common/Button";
@@ -68,9 +68,7 @@ export function Reports() {
                 <Button variant="secondary" onClick={() => setActiveReportId(report.id)}>
                   Heads up
                 </Button>
-                <Link to="/reports/analytics" className="inline-flex">
-                  <Button>Open</Button>
-                </Link>
+                <Button onClick={() => navigate("/reports/analytics")}>Open</Button>
               </div>
             </div>
           </article>

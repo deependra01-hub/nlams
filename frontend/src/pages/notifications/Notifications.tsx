@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { AppCard } from "../../components/common/AppCard";
 import { Badge } from "../../components/common/Badge";
 import { Button } from "../../components/common/Button";
@@ -64,9 +64,7 @@ export function Notifications() {
                 <Button variant="secondary" onClick={() => setActiveNotificationId(notification.id)}>
                   Heads up
                 </Button>
-                <Link to={notification.route} className="inline-flex">
-                  <Button>Open</Button>
-                </Link>
+                <Button onClick={() => navigate(notification.route)}>Open</Button>
               </div>
             </div>
           </article>
