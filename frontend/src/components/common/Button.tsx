@@ -9,13 +9,13 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variantClasses: Record<ButtonVariant, string> = {
   primary:
-    "bg-gov-700 text-white hover:bg-gov-800 focus-visible:ring-gov-500 border border-transparent",
+    "bg-gov-700 text-white hover:bg-gov-800 focus-visible:ring-gov-500 border border-transparent shadow-[0_8px_24px_rgba(27,82,181,0.18)]",
   secondary:
-    "bg-white text-slate-800 hover:bg-slate-50 focus-visible:ring-gov-500 border border-slate-200",
+    "bg-white text-slate-800 hover:bg-slate-50 focus-visible:ring-gov-500 border border-slate-200 shadow-[0_1px_1px_rgba(15,29,47,0.03)]",
   ghost:
     "bg-transparent text-slate-700 hover:bg-slate-100 focus-visible:ring-gov-500 border border-transparent",
   danger:
-    "bg-red-600 text-white hover:bg-red-700 focus-visible:ring-red-500 border border-transparent",
+    "bg-red-600 text-white hover:bg-red-700 focus-visible:ring-red-500 border border-transparent shadow-[0_8px_24px_rgba(185,28,28,0.14)]",
 };
 
 export function Button({
@@ -30,7 +30,7 @@ export function Button({
     <button
       type={type}
       className={[
-        "inline-flex items-center justify-center gap-2 rounded-control px-4 py-2 text-sm font-semibold transition",
+        "inline-flex items-center justify-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold transition",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2",
         variantClasses[variant],
         className,

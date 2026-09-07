@@ -23,11 +23,11 @@ export function Sidebar({
   return (
     <aside
       className={[
-        "flex h-full flex-col border-r border-slate-200 bg-white",
+        "flex h-full flex-col border border-white/70 bg-white/88 backdrop-blur-xl",
         mobile ? "w-full" : collapsed ? "w-20" : "w-72",
       ].join(" ")}
     >
-      <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-4 py-4">
+      <div className="flex items-center justify-between gap-3 border-b border-slate-100 px-4 py-4">
         <div className="flex min-w-0 items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gov-700 text-sm font-bold text-white">
             N
@@ -65,7 +65,7 @@ export function Sidebar({
           ))}
         </nav>
 
-        <div className="border-t border-slate-200 pt-4">
+        <div className="border-t border-slate-100 pt-4">
           <p className={`px-3 text-xs font-semibold uppercase tracking-[0.18em] text-slate-500 ${collapsed && !mobile ? "sr-only" : ""}`}>
             Quick links
           </p>
@@ -83,8 +83,8 @@ export function Sidebar({
       </div>
 
       {!collapsed || mobile ? (
-        <div className="border-t border-slate-200 p-4">
-          <div className="rounded-2xl bg-slate-50 px-4 py-3">
+        <div className="border-t border-slate-100 p-4">
+          <div className="rounded-2xl bg-slate-50/80 px-4 py-3">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
               Accessibility
             </p>
@@ -131,7 +131,9 @@ function NavRow({
 
   const baseClasses = [
     "group flex w-full items-center gap-3 rounded-2xl px-3 py-2 text-left transition",
-    active ? "bg-gov-50 text-gov-900" : "text-slate-700 hover:bg-slate-50 hover:text-slate-900",
+    active
+      ? "bg-gov-50/80 text-gov-900 shadow-[0_8px_24px_rgba(27,82,181,0.08)]"
+      : "text-slate-700 hover:bg-slate-50/80 hover:text-slate-900",
     disabled ? "cursor-not-allowed opacity-55" : "",
   ].join(" ");
 

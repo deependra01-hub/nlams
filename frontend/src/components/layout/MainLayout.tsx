@@ -36,7 +36,7 @@ export function MainLayout() {
   }, [location.pathname, setMobileNavOpen]);
 
   return (
-    <div className="min-h-screen bg-[linear-gradient(180deg,#f5f7fb_0%,#eef3f9_100%)] text-slate-900">
+    <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.96),transparent_34%),radial-gradient(circle_at_top_right,rgba(224,236,255,0.78),transparent_30%),linear-gradient(180deg,#f8fafc_0%,#eef3f9_100%)] text-slate-900">
       <MobileNavigation open={mobileNavOpen} onClose={() => setMobileNavOpen(false)}>
         <Sidebar
           mobile
@@ -48,7 +48,7 @@ export function MainLayout() {
         />
       </MobileNavigation>
 
-      <div className="mx-auto flex min-h-screen w-full max-w-[1600px] gap-4 px-4 py-4 md:px-6 lg:px-8">
+      <div className="mx-auto flex min-h-screen w-full max-w-[1520px] gap-5 px-4 py-4 md:px-6 lg:px-8">
         <div className="sticky top-4 hidden h-[calc(100vh-2rem)] lg:block">
           <Sidebar
             collapsed={sidebarCollapsed}
@@ -57,7 +57,7 @@ export function MainLayout() {
         </div>
 
         <div className="min-w-0 flex-1 space-y-4">
-          <header className="sticky top-4 z-20 rounded-2xl border border-slate-200 bg-white/95 px-4 py-3 shadow-soft backdrop-blur">
+          <header className="sticky top-4 z-20 rounded-[28px] border border-white/70 bg-white/88 px-4 py-3 shadow-[0_18px_50px_rgba(15,29,47,0.08)] backdrop-blur-xl">
             <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
               <div className="flex items-center gap-3">
                 <IconButton
@@ -130,7 +130,7 @@ export function MainLayout() {
             }
           />
 
-          <main className="min-w-0 pb-6">
+          <main className="min-w-0 pb-10">
             <Outlet />
           </main>
         </div>
@@ -158,8 +158,8 @@ function ProfileMenu() {
         <span className="hidden sm:inline">Profile</span>
         <ChevronDown className="h-4 w-4 text-slate-500 transition group-open:rotate-180" />
       </summary>
-      <div className="absolute right-0 z-20 mt-2 w-64 rounded-2xl border border-slate-200 bg-white p-3 shadow-panel">
-        <div className="rounded-xl bg-slate-50 px-3 py-2">
+      <div className="absolute right-0 z-20 mt-2 w-64 rounded-[24px] border border-white/70 bg-white/96 p-3 shadow-[0_18px_50px_rgba(15,29,47,0.10)] backdrop-blur-xl">
+        <div className="rounded-2xl bg-slate-50 px-3 py-2">
           <p className="text-sm font-semibold text-slate-900">{user?.name ?? "Demo Officer"}</p>
           <p className="text-xs text-slate-500">{DEMO_ROLE_LABEL}</p>
         </div>
