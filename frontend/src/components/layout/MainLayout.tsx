@@ -1,6 +1,7 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import { Bell, ChevronDown, Menu, UserCircle2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { useUiStore } from "../../store/ui.store";
 import { useFilterStore } from "../../store/filter.store";
 import { useNotificationStore } from "../../store/notification.store";
@@ -14,6 +15,8 @@ import { SearchBar } from "../common/SearchBar";
 import { Select } from "../common/Select";
 import { Badge } from "../common/Badge";
 import { MobileNavigation } from "./MobileNavigation";
+import { HeadsUpDialog } from "../common/HeadsUpDialog";
+import { useAuth } from "../../context/AuthContext";
 
 export function MainLayout() {
   const location = useLocation();
@@ -23,8 +26,9 @@ export function MainLayout() {
     mobileNavOpen,
     setMobileNavOpen,
   } = useUiStore();
-  const { searchText, setSearchText } = useFilterStore();
+  const { searchText, setSearchText, geographicScope, setGeographicScope } = useFilterStore();
   const { unreadCount } = useNotificationStore();
+  const navigate = useNavigate();
   const routeHeader = useMemo(() => getRouteHeader(location.pathname), [location.pathname]);
 
   useEffect(() => {
@@ -80,7 +84,8 @@ export function MainLayout() {
                 />
                 <Select
                   label="Geographic scope"
-                  defaultValue={GEO_FILTER_OPTIONS[0]?.value}
+                  value={geographicScope}
+                  onChange={(event) => setGeographicScope(event.target.value)}
                 >
                   {GEO_FILTER_OPTIONS.map((option) => (
                     <option key={option.value} value={option.value}>
@@ -95,7 +100,11 @@ export function MainLayout() {
                 </div>
 
                 <div className="relative">
-                  <IconButton icon={Bell} label={`Notifications, ${unreadCount} unread`} />
+                  <IconButton
+                    icon={Bell}
+                    label={`Notifications, ${unreadCount} unread`}
+                    onClick={() => navigate("/notifications")}
+                  />
                   {unreadCount > 0 ? (
                     <span className="absolute -right-1 -top-1 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-red-600 px-1 text-[11px] font-bold text-white">
                       {unreadCount > 9 ? "9+" : unreadCount}
@@ -131,6 +140,15 @@ export function MainLayout() {
 }
 
 function ProfileMenu() {
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
+  const [profileOpen, setProfileOpen] = useState(false);
+
+  const handleSignOut = () => {
+    logout();
+    navigate("/login", { replace: true });
+  };
+
   return (
     <details className="group relative">
       <summary
@@ -142,23 +160,60 @@ function ProfileMenu() {
       </summary>
       <div className="absolute right-0 z-20 mt-2 w-64 rounded-2xl border border-slate-200 bg-white p-3 shadow-panel">
         <div className="rounded-xl bg-slate-50 px-3 py-2">
-          <p className="text-sm font-semibold text-slate-900">Demo Officer</p>
+          <p className="text-sm font-semibold text-slate-900">{user?.name ?? "Demo Officer"}</p>
           <p className="text-xs text-slate-500">{DEMO_ROLE_LABEL}</p>
         </div>
         <div className="mt-3 space-y-1 text-sm">
-          <MenuRow label="View profile" />
-          <MenuRow label="Session preferences" />
-          <MenuRow label="Sign out" />
+          <MenuButton label="View profile" onClick={() => setProfileOpen(true)} />
+          <MenuButton label="Session preferences" onClick={() => navigate("/notifications")} />
+          <MenuButton label="Sign out" tone="danger" onClick={handleSignOut} />
         </div>
       </div>
+      <HeadsUpDialog
+        open={profileOpen}
+        title={user?.name ?? "Profile"}
+        description="Session summary and account shortcuts."
+        onClose={() => setProfileOpen(false)}
+        primaryAction={<Button onClick={() => navigate("/dashboard")}>Go to dashboard</Button>}
+      >
+        <div className="grid gap-3 sm:grid-cols-3">
+          <ProfileStat label="Role" value={user?.role ?? "Unknown"} />
+          <ProfileStat label="Permissions" value={String(user?.permissions.length ?? 0)} />
+          <ProfileStat label="Session" value={user ? "Active" : "Signed out"} />
+        </div>
+      </HeadsUpDialog>
     </details>
   );
 }
 
-function MenuRow({ label }: { label: string }) {
+function MenuButton({
+  label,
+  onClick,
+  tone = "default",
+}: {
+  label: string;
+  onClick: () => void;
+  tone?: "default" | "danger";
+}) {
   return (
-    <div className="rounded-xl px-3 py-2 font-medium text-slate-700">
+    <button
+      type="button"
+      onClick={onClick}
+      className={[
+        "w-full rounded-xl px-3 py-2 text-left font-medium transition",
+        tone === "danger" ? "text-red-700 hover:bg-red-50" : "text-slate-700 hover:bg-slate-50",
+      ].join(" ")}
+    >
       {label}
+    </button>
+  );
+}
+
+function ProfileStat({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-2xl bg-slate-50 px-4 py-4">
+      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">{label}</p>
+      <p className="mt-2 text-sm font-semibold text-slate-900">{value}</p>
     </div>
   );
 }

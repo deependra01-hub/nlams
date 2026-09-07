@@ -148,7 +148,7 @@ export const SECONDARY_NAV_ITEMS: NavItem[] = [
   },
   {
     label: "Audit Logs",
-    path: "/audit",
+    path: "/admin/audit-logs",
     icon: Workflow,
     description: "Immutable event history",
     available: true,
