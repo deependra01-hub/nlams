@@ -1,95 +1,140 @@
-import { useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { AppCard } from "../../components/common/AppCard";
 import { Badge } from "../../components/common/Badge";
-import { EmptyState } from "../../components/common/EmptyState";
+import { Button } from "../../components/common/Button";
+import { HeadsUpDialog } from "../../components/common/HeadsUpDialog";
 import { MetricCard } from "../../components/common/MetricCard";
-import { DisplacementPanel } from "../../components/rehabilitation/DisplacementPanel";
-import { FamilyDetails } from "../../components/rehabilitation/FamilyDetails";
-import { FamilyTable } from "../../components/rehabilitation/FamilyTable";
-import { RRPlan } from "../../components/rehabilitation/RRPlan";
-import { RRProgress } from "../../components/rehabilitation/RRProgress";
 import { useRehabilitation } from "../../hooks/useRehabilitation";
 import { rehabilitationService } from "../../services/rehabilitation.service";
-import { formatCurrencyInCrore, formatPercentage } from "../../utils/formatters";
+import { formatCurrencyInCrore } from "../../utils/formatters";
 import { Home, MapPinned, ShieldCheck, Users } from "lucide-react";
 
 export function RRDashboard() {
+  const navigate = useNavigate();
   const { families, summary, milestones, setActiveFamilyId } = useRehabilitation();
-  const [selectedFamilyId, setSelectedFamilyId] = useState(families[0]?.id ?? null);
+  const [activeFamilyId, setActiveFamilyIdLocal] = useState<string | null>(families[0]?.id ?? null);
 
-  const selectedFamily = useMemo(
-    () => rehabilitationService.getFamilyById(selectedFamilyId ?? "") ?? families[0] ?? null,
-    [families, selectedFamilyId],
-  );
+  const activeFamily = activeFamilyId ? rehabilitationService.getFamilyById(activeFamilyId) : null;
 
   const openFamily = (familyId: string) => {
-    setSelectedFamilyId(familyId);
     setActiveFamilyId(familyId);
+    navigate("/rr/families");
   };
 
   return (
-    <div className="space-y-4">
-      <AppCard
-        title="R&R dashboard"
-        description="Track family rehabilitation, relocation support, and completion progress."
-      >
-        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-          <MetricCard label="Families" value={String(summary.totalFamilies)} detail="Tracked in the current workflow." icon={Users} />
-          <MetricCard label="Completed" value={String(summary.completedFamilies)} detail="Families marked complete." icon={ShieldCheck} />
-          <MetricCard label="In progress" value={String(summary.inProgressFamilies)} detail="Families with active support." icon={MapPinned} />
-          <MetricCard label="Benefits" value={formatCurrencyInCrore(summary.totalBenefitLakh / 100)} detail="Total rehabilitation support." icon={Home} />
-        </div>
-      </AppCard>
-
-      <div className="grid gap-4 xl:grid-cols-[1.2fr_0.8fr]">
-        <AppCard title="Family queue" description="Select a family to review the R&R workflow.">
-          <div className="mb-4 flex flex-wrap items-center gap-2">
-            <Badge tone="primary">Demo phase</Badge>
-            <Badge tone="neutral">{formatPercentage(Math.round((summary.completedFamilies / summary.totalFamilies) * 100))} complete</Badge>
+    <div className="space-y-6">
+      <section className="grid gap-4 lg:grid-cols-[1fr_0.9fr]">
+        <AppCard title="R&R" description="A lighter view for family rehabilitation and resettlement.">
+          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+            <MetricCard label="Families" value={String(summary.totalFamilies)} detail="Current queue" icon={Users} />
+            <MetricCard label="Completed" value={String(summary.completedFamilies)} detail="Marked complete" icon={ShieldCheck} />
+            <MetricCard label="In progress" value={String(summary.inProgressFamilies)} detail="Active support" icon={MapPinned} />
+            <MetricCard label="Benefits" value={formatCurrencyInCrore(summary.totalBenefitLakh / 100)} detail="Support total" icon={Home} />
           </div>
-
-          {families.length > 0 ? (
-            <FamilyTable families={families} onOpen={openFamily} />
-          ) : (
-            <EmptyState
-              title="No families found"
-              description="Add R&R records to begin the rehabilitation workflow."
-              icon={Users}
-            />
-          )}
         </AppCard>
 
-        {selectedFamily ? (
-          <div className="grid gap-4">
-            <FamilyDetails family={selectedFamily} />
-            <DisplacementPanel family={selectedFamily} />
-            <RRProgress family={selectedFamily} />
+        <AppCard title="Status" description="Only the essentials.">
+          <div className="grid gap-3">
+            <MiniLine label="Pending house sites" value={String(summary.pendingHouseSites)} />
+            <MiniLine label="Completion rate" value={`${Math.round((summary.completedFamilies / summary.totalFamilies) * 100)}%`} />
+            <MiniLine label="Milestones" value={String(milestones.length)} />
+          </div>
+        </AppCard>
+      </section>
+
+      <section className="grid gap-4 xl:grid-cols-2">
+        {families.map((family) => (
+          <article key={family.id} className="rounded-[28px] border border-slate-100 bg-white p-5 shadow-[0_12px_40px_rgba(15,29,47,0.05)]">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">{family.village}</p>
+                <h3 className="mt-2 text-xl font-semibold text-slate-950">{family.headName}</h3>
+                <p className="mt-1 text-sm leading-6 text-slate-600">{family.remarks}</p>
+              </div>
+              <Badge tone={family.status === "completed" ? "success" : family.status === "partially_completed" ? "warning" : "neutral"}>
+                {rehabilitationService.getStatusLabel(family.status)}
+              </Badge>
+            </div>
+            <div className="mt-4 flex flex-wrap gap-2">
+              <Badge tone="neutral">
+                {family.district}, {family.state}
+              </Badge>
+              <Badge tone="neutral">{family.displacementType}</Badge>
+              <Badge tone="neutral">{family.members} members</Badge>
+            </div>
+            <div className="mt-5 flex flex-wrap justify-between gap-3">
+              <p className="text-sm text-slate-500">{family.livelihoodSource}</p>
+              <div className="flex flex-wrap gap-2">
+                <Button variant="secondary" onClick={() => setActiveFamilyIdLocal(family.id)}>
+                  Heads up
+                </Button>
+                <Button onClick={() => openFamily(family.id)}>Open</Button>
+              </div>
+            </div>
+          </article>
+        ))}
+      </section>
+
+      <section className="grid gap-4 lg:grid-cols-[0.9fr_1.1fr]">
+        <AppCard title="Timeline" description="The workflow stays visual but compact.">
+          <div className="space-y-3">
+            {milestones.map((milestone) => (
+              <div key={milestone.label} className="rounded-2xl bg-slate-50 px-4 py-4">
+                <div className="flex items-center justify-between gap-3">
+                  <p className="font-semibold text-slate-900">{milestone.label}</p>
+                  <Badge tone={milestone.status === "done" ? "success" : milestone.status === "current" ? "primary" : "neutral"}>
+                    {milestone.status}
+                  </Badge>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="mt-5 flex flex-wrap gap-2">
+            <Button variant="secondary" onClick={() => navigate("/rr/families")}>
+              Open families
+            </Button>
+          </div>
+        </AppCard>
+
+        <AppCard title="Related records" description="Quick exits, not deep navigation.">
+          <div className="grid gap-3">
+            <Link to="/compensation" className="rounded-2xl border border-slate-100 bg-slate-50 px-4 py-4 transition hover:border-gov-200 hover:bg-white">
+              <p className="font-semibold text-slate-900">Compensation</p>
+              <p className="mt-1 text-sm leading-6 text-slate-600">Open the linked compensation cases.</p>
+            </Link>
+            <Link to="/parcels" className="rounded-2xl border border-slate-100 bg-slate-50 px-4 py-4 transition hover:border-gov-200 hover:bg-white">
+              <p className="font-semibold text-slate-900">Parcels</p>
+              <p className="mt-1 text-sm leading-6 text-slate-600">Check the parcel behind the family record.</p>
+            </Link>
+          </div>
+        </AppCard>
+      </section>
+
+      <HeadsUpDialog
+        open={Boolean(activeFamily)}
+        title={activeFamily?.headName ?? ""}
+        description={activeFamily?.remarks ?? ""}
+        onClose={() => setActiveFamilyIdLocal(null)}
+        primaryAction={activeFamily ? <Button onClick={() => openFamily(activeFamily.id)}>Open family page</Button> : null}
+      >
+        {activeFamily ? (
+          <div className="grid gap-3 sm:grid-cols-3">
+            <MiniLine label="Housing" value={activeFamily.housingOption} />
+            <MiniLine label="Benefit" value={formatCurrencyInCrore(activeFamily.rehabilitationBenefitLakh / 100)} />
+            <MiniLine label="Status" value={rehabilitationService.getStatusLabel(activeFamily.status)} />
           </div>
         ) : null}
-      </div>
+      </HeadsUpDialog>
+    </div>
+  );
+}
 
-      <div className="grid gap-4 xl:grid-cols-[0.95fr_1.05fr]">
-        <RRPlan milestones={milestones} />
-        <AppCard title="Cross links" description="Jump to adjacent operational records.">
-          <div className="grid gap-3">
-            <Link
-              to="/compensation"
-              className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 transition hover:border-gov-300 hover:bg-gov-50"
-            >
-              <p className="font-semibold text-slate-900">Open compensation</p>
-              <p className="mt-1 text-sm text-slate-600">Review linked compensation cases and payment queue.</p>
-            </Link>
-            <Link
-              to="/parcels"
-              className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 transition hover:border-gov-300 hover:bg-gov-50"
-            >
-              <p className="font-semibold text-slate-900">Open parcels</p>
-              <p className="mt-1 text-sm text-slate-600">Check the parcel record backing the family entry.</p>
-            </Link>
-          </div>
-        </AppCard>
-      </div>
+function MiniLine({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-2xl bg-slate-50 px-4 py-4">
+      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">{label}</p>
+      <p className="mt-2 text-sm font-semibold text-slate-900">{value}</p>
     </div>
   );
 }

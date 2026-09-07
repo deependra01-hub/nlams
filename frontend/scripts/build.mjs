@@ -4,6 +4,7 @@ import { createRequire } from "node:module";
 import ts from "typescript";
 
 const require = createRequire(import.meta.url);
+const esbuild = require("esbuild");
 const postcss = require("postcss");
 const tailwindcss = require("tailwindcss");
 const autoprefixer = require("autoprefixer");
@@ -68,6 +69,7 @@ await compileCss(
   path.join(distDir, "src", "index.css")
 );
 await transpileDirectory(srcDir, path.join(distDir, "src"));
+await bundleMain(path.join(srcDir, "main.tsx"), path.join(distDir, "src", "main.js"));
 
 async function transpileDirectory(sourceDir, outputDir) {
   await fs.mkdir(outputDir, { recursive: true });
@@ -116,6 +118,20 @@ async function compileCss(sourcePath, outputPath) {
     to: outputPath,
   });
   await fs.writeFile(outputPath, result.css, "utf8");
+}
+
+async function bundleMain(entryPoint, outputFile) {
+  await fs.mkdir(path.dirname(outputFile), { recursive: true });
+  await esbuild.build({
+    entryPoints: [entryPoint],
+    bundle: true,
+    format: "esm",
+    target: "es2022",
+    platform: "browser",
+    outfile: outputFile,
+    jsx: "automatic",
+    logLevel: "silent",
+  });
 }
 
 function rewriteRelativeImports(code) {

@@ -1,36 +1,21 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AppCard } from "../../components/common/AppCard";
 import { Badge } from "../../components/common/Badge";
-import { EmptyState } from "../../components/common/EmptyState";
+import { Button } from "../../components/common/Button";
+import { HeadsUpDialog } from "../../components/common/HeadsUpDialog";
 import { MetricCard } from "../../components/common/MetricCard";
-import { ProjectCard } from "../../components/projects/ProjectCard";
-import { ProjectFilters } from "../../components/projects/ProjectFilters";
 import { useProjects } from "../../hooks/useProjects";
 import { projectService } from "../../services/project.service";
-import type { ProjectStatus } from "../../types/project.types";
 import { formatCurrencyInCrore, formatPercentage } from "../../utils/formatters";
-import { BarChart3, MapPinned, ShieldAlert, Users } from "lucide-react";
+import { BarChart3, MapPinned, Users } from "lucide-react";
 
 export function ProjectList() {
   const navigate = useNavigate();
   const { projects, stats, setActiveProjectId } = useProjects();
-  const [query, setQuery] = useState("");
-  const [status, setStatus] = useState<ProjectStatus | "all">("all");
+  const [activeProjectId, setActiveProjectIdLocal] = useState<string | null>(projects[0]?.id ?? null);
 
-  const filteredProjects = useMemo(() => {
-    const normalizedQuery = query.trim().toLowerCase();
-    return projects.filter((project) => {
-      const matchesQuery =
-        normalizedQuery.length === 0 ||
-        [project.code, project.name, project.district, project.state, project.agency]
-          .join(" ")
-          .toLowerCase()
-          .includes(normalizedQuery);
-      const matchesStatus = status === "all" || project.status === status;
-      return matchesQuery && matchesStatus;
-    });
-  }, [projects, query, status]);
+  const activeProject = activeProjectId ? projectService.getProjectById(activeProjectId) : null;
 
   const openProject = (projectId: string) => {
     setActiveProjectId(projectId);
@@ -38,87 +23,85 @@ export function ProjectList() {
   };
 
   return (
-    <div className="space-y-4">
-      <AppCard
-        title="Projects"
-        description="A portfolio view for land acquisition progress, risk posture, and operational ownership."
+    <div className="space-y-6">
+      <section className="grid gap-4 xl:grid-cols-[1.05fr_0.95fr]">
+        <AppCard title="Projects" description="A quiet portfolio view. Open a card for more detail.">
+          <div className="grid gap-3 sm:grid-cols-3">
+            <MetricCard label="Projects" value={String(stats.totalProjects)} detail="Current portfolio" icon={BarChart3} />
+            <MetricCard label="Budget" value={formatCurrencyInCrore(stats.totalBudgetCrore)} detail="Estimated envelope" icon={MapPinned} />
+            <MetricCard label="Avg progress" value={formatPercentage(stats.averageProgress)} detail="Portfolio mean" icon={Users} />
+          </div>
+        </AppCard>
+
+        <AppCard title="Focus" description="Only the sharpest signals stay on the surface.">
+          <div className="grid gap-3">
+            <MiniLine label="High-risk projects" value={String(stats.highRiskProjects)} />
+            <MiniLine label="Active issues" value={String(stats.activeIssues)} />
+            <MiniLine label="Planning" value={String(projectService.listProjects("planning").length)} />
+          </div>
+        </AppCard>
+      </section>
+
+      <section className="grid gap-4 xl:grid-cols-2">
+        {projects.map((project) => (
+          <article
+            key={project.id}
+            className="rounded-[28px] border border-slate-100 bg-white p-5 shadow-[0_12px_40px_rgba(15,29,47,0.05)]"
+          >
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">{project.code}</p>
+                <h3 className="mt-2 text-xl font-semibold text-slate-950">{project.name}</h3>
+                <p className="mt-1 text-sm leading-6 text-slate-600">{project.description}</p>
+              </div>
+              <Badge tone="neutral">{formatPercentage(project.progress)}</Badge>
+            </div>
+            <div className="mt-4 flex flex-wrap gap-2">
+              <Badge tone="neutral">
+                {project.district}, {project.state}
+              </Badge>
+              <Badge tone="neutral">{projectService.getStatusLabel(project.status)}</Badge>
+              <Badge tone={project.riskScore >= 70 ? "warning" : "success"}>Risk {project.riskScore}</Badge>
+            </div>
+            <div className="mt-5 flex flex-wrap justify-between gap-3">
+              <p className="text-sm text-slate-500">{project.affectedFamilies} families</p>
+              <div className="flex flex-wrap gap-2">
+                <Button variant="secondary" onClick={() => setActiveProjectIdLocal(project.id)}>
+                  Heads up
+                </Button>
+                <Button onClick={() => openProject(project.id)}>Open</Button>
+              </div>
+            </div>
+          </article>
+        ))}
+      </section>
+
+      <HeadsUpDialog
+        open={Boolean(activeProject)}
+        title={activeProject?.name ?? ""}
+        description={activeProject?.description ?? ""}
+        onClose={() => setActiveProjectIdLocal(null)}
+        primaryAction={
+          activeProject ? <Button onClick={() => openProject(activeProject.id)}>Open project page</Button> : null
+        }
       >
-        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-          <MetricCard
-            label="Active projects"
-            value={String(stats.totalProjects)}
-            detail="Projects currently in the demo portfolio."
-            icon={BarChart3}
-          />
-          <MetricCard
-            label="Budget envelope"
-            value={formatCurrencyInCrore(stats.totalBudgetCrore)}
-            detail="Combined project budget estimate."
-            icon={MapPinned}
-          />
-          <MetricCard
-            label="Average progress"
-            value={formatPercentage(stats.averageProgress)}
-            detail="Mean completion across the portfolio."
-            icon={Users}
-          />
-          <MetricCard
-            label="High-risk projects"
-            value={String(stats.highRiskProjects)}
-            detail="Projects needing closer review."
-            icon={ShieldAlert}
-          />
-        </div>
-      </AppCard>
-
-      <ProjectFilters
-        query={query}
-        status={status}
-        onQueryChange={setQuery}
-        onStatusChange={setStatus}
-        onReset={() => {
-          setQuery("");
-          setStatus("all");
-        }}
-      />
-
-      {filteredProjects.length > 0 ? (
-        <div className="grid gap-4 xl:grid-cols-2">
-          {filteredProjects.map((project) => (
-            <ProjectCard key={project.id} project={project} onOpen={openProject} />
-          ))}
-        </div>
-      ) : (
-        <EmptyState
-          title="No projects match the current filters"
-          description="Try widening the search or resetting the selected status."
-          icon={BarChart3}
-          actionLabel="Reset filters"
-          onAction={() => {
-            setQuery("");
-            setStatus("all");
-          }}
-        />
-      )}
-
-      <div className="grid gap-4 xl:grid-cols-3">
-        <StatusSummary label="Planning" count={projectService.listProjects("planning").length} />
-        <StatusSummary label="Survey" count={projectService.listProjects("survey").length} />
-        <StatusSummary label="Acquisition" count={projectService.listProjects("acquisition").length} />
-      </div>
+        {activeProject ? (
+          <div className="grid gap-3 sm:grid-cols-3">
+            <MiniLine label="Code" value={activeProject.code} />
+            <MiniLine label="Target" value={activeProject.targetDate} />
+            <MiniLine label="Stage" value={projectService.getStatusLabel(activeProject.status)} />
+          </div>
+        ) : null}
+      </HeadsUpDialog>
     </div>
   );
 }
 
-function StatusSummary({ label, count }: { label: string; count: number }) {
+function MiniLine({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-soft">
+    <div className="rounded-2xl bg-slate-50 px-4 py-4">
       <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">{label}</p>
-      <p className="mt-2 text-3xl font-semibold text-slate-900">{count}</p>
-      <p className="mt-1 text-sm text-slate-600">Projects currently in this stage.</p>
-      <Badge tone="neutral" className="mt-3">
-        Demo status
-      </Badge>
+      <p className="mt-2 text-sm font-semibold text-slate-900">{value}</p>
     </div>
   );
 }

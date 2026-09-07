@@ -1,148 +1,102 @@
 import { useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { AppCard } from "../../components/common/AppCard";
 import { Badge } from "../../components/common/Badge";
 import { Button } from "../../components/common/Button";
+import { HeadsUpDialog } from "../../components/common/HeadsUpDialog";
 import { MetricCard } from "../../components/common/MetricCard";
 import { aiService } from "../../services/ai.service";
 import type { AIInsight } from "../../types/ai.types";
-import { AlertTriangle, Brain, CircleGauge, LineChart, Sparkles } from "lucide-react";
+import { AlertTriangle, Brain, CircleGauge, Sparkles } from "lucide-react";
 
 export function AIIntelligence() {
+  const navigate = useNavigate();
   const insights = aiService.getInsights();
-  const history = aiService.getHistory();
   const summary = aiService.getSummary();
-  const [activeId, setActiveId] = useState(insights[0]?.id ?? null);
+  const [activeId, setActiveId] = useState<string | null>(insights[0]?.id ?? null);
   const activeInsight = useMemo(
     () => insights.find((insight) => insight.id === activeId) ?? insights[0] ?? null,
     [activeId, insights],
   );
 
   return (
-    <div className="space-y-4">
-      <AppCard title="AI intelligence" description="Risk scoring and next-action suggestions across the workflow.">
-        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-          <MetricCard label="Scans" value={String(summary.totalScans)} detail="All analyzed records." icon={Brain} />
-          <MetricCard label="Average risk" value={`${summary.averageScore}/100`} detail="Portfolio-wide score." icon={CircleGauge} />
-          <MetricCard label="Critical" value={String(summary.criticalRisks)} detail="Urgent reviews needed." icon={AlertTriangle} />
-          <MetricCard label="Actions" value={String(summary.recommendedActions)} detail="Suggested next steps." icon={Sparkles} />
-        </div>
-      </AppCard>
-
-      <div className="grid gap-4 xl:grid-cols-[0.9fr_1.1fr]">
-        <AppCard title="Risk queue" description="Open an entity to review its AI signal.">
-          <div className="space-y-2">
-            {insights.map((insight) => (
-              <button
-                key={insight.id}
-                type="button"
-                onClick={() => setActiveId(insight.id)}
-                className={[
-                  "w-full rounded-2xl border px-4 py-4 text-left transition",
-                  activeInsight?.id === insight.id ? "border-gov-300 bg-gov-50" : "border-slate-200 bg-white",
-                ].join(" ")}
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <p className="font-semibold text-slate-900">{insight.entityName}</p>
-                    <p className="mt-1 text-sm text-slate-600">{insight.summary}</p>
-                  </div>
-                  <Badge tone={toneByLevel(insight.level)}>{aiService.getRiskLabel(insight.level)}</Badge>
-                </div>
-              </button>
-            ))}
+    <div className="space-y-6">
+      <section className="grid gap-4 lg:grid-cols-[1fr_0.9fr]">
+        <AppCard title="AI intelligence" description="A minimal risk surface with just enough signal to act.">
+          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+            <MetricCard label="Scans" value={String(summary.totalScans)} detail="Analyzed records" icon={Brain} />
+            <MetricCard label="Average risk" value={`${summary.averageScore}/100`} detail="Portfolio level" icon={CircleGauge} />
+            <MetricCard label="Critical" value={String(summary.criticalRisks)} detail="Urgent reviews" icon={AlertTriangle} />
+            <MetricCard label="Actions" value={String(summary.recommendedActions)} detail="Suggested steps" icon={Sparkles} />
           </div>
         </AppCard>
 
-        {activeInsight ? <InsightDetail insight={activeInsight} /> : null}
-      </div>
-
-      <div className="grid gap-4 xl:grid-cols-2">
-        <AppCard title="Prediction history" description="Recent AI output changes.">
-          <div className="space-y-3">
-            {history.map((entry) => (
-              <div key={entry.id} className="rounded-2xl border border-slate-200 bg-white px-4 py-4">
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <p className="font-semibold text-slate-900">{entry.entityName}</p>
-                    <p className="mt-1 text-sm text-slate-600">{entry.note}</p>
-                  </div>
-                  <span className={entry.delta >= 0 ? "text-amber-700" : "text-emerald-700"}>
-                    {entry.delta >= 0 ? "+" : ""}
-                    {entry.delta}
-                  </span>
-                </div>
-                <p className="mt-3 text-xs uppercase tracking-[0.16em] text-slate-500">{entry.date}</p>
-              </div>
-            ))}
-          </div>
-        </AppCard>
-
-        <AppCard title="Operational shortcuts" description="Jump to the most affected workflow areas.">
+        <AppCard title="Signal" description="Short prompts, not a full analytics wall.">
           <div className="grid gap-3">
-            {insights.map((insight) => (
-              <Link
-                key={insight.id}
-                to={insight.route}
-                className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 transition hover:border-gov-300 hover:bg-gov-50"
-              >
-                <p className="font-semibold text-slate-900">{insight.entityName}</p>
-                <p className="mt-1 text-sm text-slate-600">{insight.recommendation}</p>
-              </Link>
-            ))}
-          </div>
-          <div className="mt-4">
-            <Link to="/reports" className="inline-flex">
-              <Button variant="secondary" leadingIcon={LineChart}>
-                Open reports
-              </Button>
-            </Link>
+            <MiniLine label="Risk queue" value={String(insights.length)} />
+            <MiniLine label="Default view" value={insights[0]?.entityName ?? "None"} />
+            <MiniLine label="Mode" value="Heads up launchpad" />
           </div>
         </AppCard>
-      </div>
+      </section>
+
+      <section className="grid gap-4 xl:grid-cols-2">
+        {insights.map((insight) => (
+          <article
+            key={insight.id}
+            className="rounded-[28px] border border-slate-100 bg-white p-5 shadow-[0_12px_40px_rgba(15,29,47,0.05)]"
+          >
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">{insight.domain}</p>
+                <h3 className="mt-2 text-xl font-semibold text-slate-950">{insight.entityName}</h3>
+                <p className="mt-1 text-sm leading-6 text-slate-600">{insight.summary}</p>
+              </div>
+              <Badge tone={toneByLevel(insight.level)}>{aiService.getRiskLabel(insight.level)}</Badge>
+            </div>
+            <div className="mt-4 flex flex-wrap gap-2">
+              <Badge tone="neutral">Confidence {insight.confidence}%</Badge>
+              <Badge tone="neutral">Score {insight.score}/100</Badge>
+            </div>
+            <div className="mt-5 flex flex-wrap justify-between gap-3">
+              <p className="text-sm text-slate-500">{insight.updatedAt}</p>
+              <div className="flex flex-wrap gap-2">
+                <Button variant="secondary" onClick={() => setActiveId(insight.id)}>
+                  Heads up
+                </Button>
+                <Link to={insight.route} className="inline-flex">
+                  <Button>Open</Button>
+                </Link>
+              </div>
+            </div>
+          </article>
+        ))}
+      </section>
+
+      <HeadsUpDialog
+        open={Boolean(activeInsight)}
+        title={activeInsight?.entityName ?? ""}
+        description={activeInsight?.recommendation ?? ""}
+        onClose={() => setActiveId(null)}
+        primaryAction={activeInsight ? <Button onClick={() => navigate(activeInsight.route)}>Open</Button> : null}
+      >
+        {activeInsight ? (
+          <div className="grid gap-3 sm:grid-cols-3">
+            <MiniLine label="Owner" value={activeInsight.owner} />
+            <MiniLine label="Route" value={activeInsight.route} />
+            <MiniLine label="Drivers" value={String(activeInsight.drivers.length)} />
+          </div>
+        ) : null}
+      </HeadsUpDialog>
     </div>
   );
 }
 
-function InsightDetail({ insight }: { insight: AIInsight }) {
+function MiniLine({ label, value }: { label: string; value: string }) {
   return (
-    <AppCard title="Selected insight" description={insight.summary}>
-      <div className="space-y-4">
-        <div className="flex flex-wrap items-center gap-2">
-          <Badge tone={toneByLevel(insight.level)}>{aiService.getRiskLabel(insight.level)} risk</Badge>
-          <Badge tone="neutral">{insight.domain}</Badge>
-          <Badge tone="neutral">Confidence {insight.confidence}%</Badge>
-        </div>
-        <div className="grid gap-3 sm:grid-cols-2">
-          <Info label="Owner" value={insight.owner} />
-          <Info label="Updated" value={insight.updatedAt} />
-          <Info label="Score" value={`${insight.score}/100`} />
-          <Info label="Route" value={insight.route} />
-        </div>
-        <div>
-          <p className="text-sm font-semibold text-slate-900">Drivers</p>
-          <div className="mt-2 flex flex-wrap gap-2">
-            {insight.drivers.map((driver) => (
-              <Badge key={driver} tone="neutral">
-                {driver}
-              </Badge>
-            ))}
-          </div>
-        </div>
-        <div className="rounded-2xl bg-gov-50 px-4 py-4">
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-gov-700">Recommended action</p>
-          <p className="mt-2 text-sm leading-6 text-gov-900">{insight.recommendation}</p>
-        </div>
-      </div>
-    </AppCard>
-  );
-}
-
-function Info({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="rounded-2xl bg-slate-50 px-4 py-3">
-      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">{label}</p>
-      <p className="mt-1 text-sm font-semibold text-slate-800">{value}</p>
+    <div className="rounded-2xl bg-slate-50 px-4 py-4">
+      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">{label}</p>
+      <p className="mt-2 text-sm font-semibold text-slate-900">{value}</p>
     </div>
   );
 }
@@ -158,4 +112,5 @@ function toneByLevel(level: AIInsight["level"]) {
     case "critical":
       return "danger";
   }
+  return "neutral";
 }
