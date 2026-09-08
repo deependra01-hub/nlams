@@ -17,8 +17,8 @@ export function Header({
       <div className="space-y-2">
         <Breadcrumbs items={breadcrumbs} />
         <div>
-          <h2 className="text-2xl font-semibold tracking-tight text-slate-950">{title}</h2>
-          <p className="mt-1 max-w-3xl text-sm leading-6 text-slate-500">{description}</p>
+          <h2 className="text-2xl font-semibold tracking-tight text-blue-950">{title}</h2>
+          <p className="mt-1 max-w-3xl text-sm leading-6 text-blue-700/75">{description}</p>
         </div>
       </div>
       {actions ? <div className="flex flex-wrap items-center gap-2">{actions}</div> : null}

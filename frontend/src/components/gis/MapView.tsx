@@ -24,7 +24,13 @@ export function MapView({
 
   return (
     <div className="overflow-hidden rounded-[1.5rem] border border-slate-200 bg-white shadow-panel">
-      <MapContainer center={[center.lat, center.lng]} zoom={5} scrollWheelZoom className="h-[560px] w-full">
+      <MapContainer
+        key={`${center.lat.toFixed(4)}-${center.lng.toFixed(4)}`}
+        center={[center.lat, center.lng]}
+        zoom={5}
+        scrollWheelZoom
+        className="h-[560px] w-full"
+      >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

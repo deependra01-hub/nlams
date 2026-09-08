@@ -13,7 +13,7 @@ import { DollarSign, FileText, ShieldAlert, Wallet } from "lucide-react";
 export function CompensationDashboard() {
   const navigate = useNavigate();
   const { cases, summary, setActiveCaseId } = useCompensation();
-  const [activeCaseId, setActiveCaseIdLocal] = useState<string | null>(cases[0]?.id ?? null);
+  const [activeCaseId, setActiveCaseIdLocal] = useState<string | null>(null);
 
   const activeCase = activeCaseId ? compensationService.getCaseById(activeCaseId) : null;
   const payments = compensationService.getPayments();
@@ -24,8 +24,8 @@ export function CompensationDashboard() {
   };
 
   return (
-    <div className="space-y-6">
-      <section className="grid gap-4 lg:grid-cols-[1fr_0.9fr]">
+    <div className="space-y-7">
+      <section className="grid gap-4 xl:grid-cols-[1.15fr_0.85fr]">
         <AppCard title="Compensation" description="A light review surface for awards and payouts.">
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
             <MetricCard label="Cases" value={String(summary.totalCases)} detail="Current queue" icon={FileText} />
@@ -46,7 +46,7 @@ export function CompensationDashboard() {
 
       <section className="grid gap-4 xl:grid-cols-2">
         {cases.map((item) => (
-          <article key={item.id} className="rounded-[28px] border border-slate-100 bg-white p-5 shadow-[0_12px_40px_rgba(15,29,47,0.05)]">
+          <article key={item.id} className="rounded-[28px] border border-sky-100 bg-[linear-gradient(180deg,rgba(255,255,255,0.98)_0%,rgba(245,249,255,0.94)_100%)] p-6 shadow-[0_12px_40px_rgba(15,29,47,0.05)]">
             <div className="flex items-start justify-between gap-4">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">{item.parcelId}</p>
@@ -76,11 +76,11 @@ export function CompensationDashboard() {
         ))}
       </section>
 
-      <section className="grid gap-4 lg:grid-cols-[1fr_0.9fr]">
+      <section className="grid gap-4 xl:grid-cols-[1fr_0.9fr]">
         <AppCard title="Payment queue" description="Just the current list, no full ledger surface.">
           <div className="space-y-3">
             {payments.slice(0, 3).map((payment) => (
-              <div key={payment.id} className="rounded-2xl bg-slate-50 px-4 py-4">
+            <div key={payment.id} className="rounded-2xl border border-sky-100 bg-white/90 px-4 py-4">
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <p className="font-semibold text-slate-900">{payment.beneficiary}</p>
@@ -102,11 +102,11 @@ export function CompensationDashboard() {
 
         <AppCard title="Related paths" description="One click to the next step.">
           <div className="grid gap-3">
-            <Link to="/parcels" className="rounded-2xl border border-slate-100 bg-slate-50 px-4 py-4 transition hover:border-gov-200 hover:bg-white">
+            <Link to="/parcels" className="rounded-2xl border border-sky-100 bg-white/90 px-4 py-4 transition hover:border-violet-200 hover:bg-[linear-gradient(135deg,rgba(255,255,255,0.98),rgba(245,248,255,0.98))]">
               <p className="font-semibold text-slate-900">Parcel registry</p>
               <p className="mt-1 text-sm leading-6 text-slate-600">Back to the parcel record supporting the case.</p>
             </Link>
-            <Link to="/projects" className="rounded-2xl border border-slate-100 bg-slate-50 px-4 py-4 transition hover:border-gov-200 hover:bg-white">
+            <Link to="/projects" className="rounded-2xl border border-sky-100 bg-white/90 px-4 py-4 transition hover:border-violet-200 hover:bg-[linear-gradient(135deg,rgba(255,255,255,0.98),rgba(245,248,255,0.98))]">
               <p className="font-semibold text-slate-900">Project portfolio</p>
               <p className="mt-1 text-sm leading-6 text-slate-600">Return to the owning project.</p>
             </Link>
@@ -135,9 +135,9 @@ export function CompensationDashboard() {
 
 function MiniLine({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-2xl bg-slate-50 px-4 py-4">
-      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">{label}</p>
-      <p className="mt-2 text-sm font-semibold text-slate-900">{value}</p>
+    <div className="rounded-2xl border border-sky-100 bg-white/90 px-4 py-4">
+      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-700">{label}</p>
+      <p className="mt-2 text-sm font-semibold text-blue-950">{value}</p>
     </div>
   );
 }

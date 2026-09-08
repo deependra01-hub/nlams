@@ -15,7 +15,7 @@ export function DocumentRepository() {
   const { documents, stats, setActiveDocumentId } = useDocuments();
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState<DocumentStatus | "all">("all");
-  const [activeDocumentId, setActiveDocumentIdLocal] = useState<string | null>(documents[0]?.id ?? null);
+  const [activeDocumentId, setActiveDocumentIdLocal] = useState<string | null>(null);
 
   const filteredDocuments = useMemo(
     () =>
@@ -48,8 +48,8 @@ export function DocumentRepository() {
   };
 
   return (
-    <div className="space-y-6">
-      <section className="grid gap-4 lg:grid-cols-[1fr_0.9fr]">
+    <div className="space-y-7">
+      <section className="grid gap-4 xl:grid-cols-[1fr_0.9fr]">
         <AppCard title="Document repository" description="A quiet evidence shelf. Open records only when you need them.">
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
             <MetricCard label="Documents" value={String(stats.totalDocuments)} detail="Catalogued records" icon={FileText} />
@@ -102,7 +102,7 @@ export function DocumentRepository() {
         {launchDocuments.map((document) => (
           <article
             key={document.id}
-            className="rounded-[28px] border border-slate-100 bg-white p-5 shadow-[0_12px_40px_rgba(15,29,47,0.05)]"
+            className="rounded-[28px] border border-sky-100 bg-[linear-gradient(180deg,rgba(255,255,255,0.98)_0%,rgba(244,248,255,0.94)_100%)] p-6 shadow-[0_12px_40px_rgba(15,29,47,0.05)]"
           >
             <div className="flex items-start justify-between gap-4">
               <div>
@@ -153,9 +153,9 @@ export function DocumentRepository() {
 
 function MiniLine({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-2xl bg-slate-50 px-4 py-4">
-      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">{label}</p>
-      <p className="mt-2 text-sm font-semibold text-slate-900">{value}</p>
+    <div className="rounded-2xl border border-sky-100 bg-white/90 px-4 py-4">
+      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-700">{label}</p>
+      <p className="mt-2 text-sm font-semibold text-blue-950">{value}</p>
     </div>
   );
 }

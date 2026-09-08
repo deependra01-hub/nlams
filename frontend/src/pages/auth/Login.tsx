@@ -21,7 +21,7 @@ export function Login() {
 
   const handleLogin = (role: Role) => {
     loginAs(role);
-    navigate(from, { replace: true });
+    navigate(from, { replace: true, state: { showWelcome: true } });
   };
 
   return (

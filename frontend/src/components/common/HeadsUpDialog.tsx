@@ -35,9 +35,9 @@ export function HeadsUpDialog({
       >
         <div className="flex items-start justify-between gap-4">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-gov-700">Heads up</p>
-            <h3 className="mt-2 text-2xl font-semibold tracking-tight text-slate-900">{title}</h3>
-            <p className="mt-2 max-w-xl text-sm leading-6 text-slate-600">{description}</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-blue-700">Heads up</p>
+            <h3 className="mt-2 text-2xl font-semibold tracking-tight text-blue-950">{title}</h3>
+            <p className="mt-2 max-w-xl text-sm leading-6 text-blue-700/75">{description}</p>
           </div>
           <Button variant="ghost" className="shrink-0" onClick={onClose} leadingIcon={X} aria-label="Close dialog">
             Close

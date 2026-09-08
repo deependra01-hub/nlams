@@ -2,10 +2,11 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { IconButton } from "../common/IconButton";
 import {
-  DEMO_ROLE_LABEL,
   PRIMARY_NAV_ITEMS,
   SECONDARY_NAV_ITEMS,
+  getRoleLabel,
 } from "../../app/config/navigation";
+import { useAuth } from "../../context/AuthContext";
 
 export function Sidebar({
   collapsed,
@@ -19,25 +20,29 @@ export function Sidebar({
   onCloseMobile?: () => void;
 }) {
   const location = useLocation();
+  const { user } = useAuth();
+  const role = user?.role;
+  const primaryItems = PRIMARY_NAV_ITEMS.filter((item) => !item.hiddenRoles?.includes(role ?? "central_admin"));
+  const secondaryItems = SECONDARY_NAV_ITEMS.filter((item) => !item.hiddenRoles?.includes(role ?? "central_admin"));
 
   return (
     <aside
       className={[
-        "flex h-full flex-col border border-white/70 bg-white/88 backdrop-blur-xl",
+        "flex h-full flex-col border border-white/80 bg-white/92 shadow-[0_18px_50px_rgba(15,29,47,0.06)] backdrop-blur-xl",
         mobile ? "w-full" : collapsed ? "w-20" : "w-72",
       ].join(" ")}
     >
-      <div className="flex items-center justify-between gap-3 border-b border-slate-100 px-4 py-4">
+      <div className="flex items-center justify-between gap-3 border-b border-slate-100 px-4 py-5">
         <div className="flex min-w-0 items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gov-700 text-sm font-bold text-white">
-            N
+          <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,#6d5dfc_0%,#2e7af0_100%)] text-sm font-bold text-white shadow-[0_10px_24px_rgba(77,92,255,0.28)]">
+            NL
           </div>
           {!collapsed || mobile ? (
             <div className="min-w-0">
-              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-gov-700">
+              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-violet-700">
                 NLAMS
               </p>
-              <p className="truncate text-sm font-semibold text-slate-900">{DEMO_ROLE_LABEL}</p>
+              <p className="truncate text-sm font-semibold text-slate-900">{getRoleLabel(role)}</p>
             </div>
           ) : null}
         </div>
@@ -53,9 +58,9 @@ export function Sidebar({
         </div>
       </div>
 
-      <div className="flex-1 space-y-6 overflow-y-auto px-3 py-4">
+      <div className="flex-1 space-y-6 overflow-y-auto px-3 py-5">
         <nav aria-label="Primary navigation" className="space-y-2">
-          {PRIMARY_NAV_ITEMS.map((item) => (
+          {primaryItems.map((item) => (
             <NavRow
               key={item.path}
               item={item}
@@ -70,7 +75,7 @@ export function Sidebar({
             Quick links
           </p>
           <div className="mt-2 space-y-1">
-            {SECONDARY_NAV_ITEMS.map((item) => (
+            {secondaryItems.map((item) => (
               <NavRow
                 key={item.path}
                 item={item}
@@ -84,14 +89,23 @@ export function Sidebar({
 
       {!collapsed || mobile ? (
         <div className="border-t border-slate-100 p-4">
-          <div className="rounded-2xl bg-slate-50/80 px-4 py-3">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
-              Accessibility
+          <div className="rounded-[24px] border border-slate-100 bg-[linear-gradient(180deg,#ffffff_0%,#f7fbff_100%)] px-4 py-4 shadow-[0_10px_30px_rgba(15,29,47,0.05)]">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-700">
+              Workspace
             </p>
-            <p className="mt-1 text-sm text-slate-700">
-              Keyboard navigation, focus states, and clear labels are built into the shell.
+            <p className="mt-1 text-sm font-semibold text-slate-900">Oxl... inspired workspace</p>
+            <p className="mt-1 text-xs leading-5 text-slate-500">
+              Lightweight navigation with role-based visibility.
             </p>
-            <p className="mt-3 text-sm font-semibold text-gov-700">Layout review ready</p>
+            <div className="mt-4">
+              <div className="mb-2 flex items-center justify-between text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">
+                <span>Storage used</span>
+                <span>68%</span>
+              </div>
+              <div className="h-2 rounded-full bg-slate-100">
+                <div className="h-2 w-[68%] rounded-full bg-[linear-gradient(90deg,#6d5dfc_0%,#2e7af0_100%)]" />
+              </div>
+            </div>
           </div>
         </div>
       ) : null}
@@ -130,9 +144,9 @@ function NavRow({
   );
 
   const baseClasses = [
-    "group flex w-full items-center gap-3 rounded-2xl px-3 py-2 text-left transition",
+    "group flex w-full items-center gap-3 rounded-2xl px-3 py-2.5 text-left transition",
     active
-      ? "bg-gov-50/80 text-gov-900 shadow-[0_8px_24px_rgba(27,82,181,0.08)]"
+      ? "bg-[linear-gradient(90deg,rgba(109,93,252,0.13)_0%,rgba(46,122,240,0.10)_100%)] text-violet-900 shadow-[0_8px_24px_rgba(83,92,255,0.10)]"
       : "text-slate-700 hover:bg-slate-50/80 hover:text-slate-900",
     disabled ? "cursor-not-allowed opacity-55" : "",
   ].join(" ");

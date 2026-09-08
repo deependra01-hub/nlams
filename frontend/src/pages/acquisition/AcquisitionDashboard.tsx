@@ -12,7 +12,7 @@ import { AlertTriangle, CheckCircle2, FileText, MapPinned } from "lucide-react";
 export function AcquisitionDashboard() {
   const navigate = useNavigate();
   const { cases, summary, setActiveCaseId } = useAcquisition();
-  const [activeCaseId, setActiveCaseIdLocal] = useState<string | null>(cases[0]?.id ?? null);
+  const [activeCaseId, setActiveCaseIdLocal] = useState<string | null>(null);
   const activeCase = activeCaseId ? acquisitionService.getCaseById(activeCaseId) : null;
   const launchCases = cases.slice(0, 4);
 
@@ -22,8 +22,8 @@ export function AcquisitionDashboard() {
   };
 
   return (
-    <div className="space-y-6">
-      <section className="grid gap-4 lg:grid-cols-[1fr_0.9fr]">
+    <div className="space-y-7">
+      <section className="grid gap-4 xl:grid-cols-[1.15fr_0.85fr]">
         <AppCard title="Acquisition" description="A quiet launchpad for case review. Open a case only when needed.">
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
             <MetricCard label="Cases" value={String(summary.totalCases)} detail="Tracked workflows" icon={FileText} />
@@ -46,7 +46,7 @@ export function AcquisitionDashboard() {
         {launchCases.map((entry) => (
           <article
             key={entry.id}
-            className="rounded-[28px] border border-slate-100 bg-white p-5 shadow-[0_12px_40px_rgba(15,29,47,0.05)]"
+            className="rounded-[28px] border border-sky-100 bg-[linear-gradient(180deg,rgba(255,255,255,0.98)_0%,rgba(244,248,255,0.94)_100%)] p-6 shadow-[0_12px_40px_rgba(15,29,47,0.05)]"
           >
             <div className="flex items-start justify-between gap-4">
               <div>
@@ -59,7 +59,7 @@ export function AcquisitionDashboard() {
               </Badge>
             </div>
             <div className="mt-4 flex flex-wrap gap-2">
-              <Badge tone="neutral">{entry.stage}</Badge>
+              <Badge tone="primary">{entry.stage}</Badge>
               <Badge tone="neutral">{entry.priority} priority</Badge>
               <Badge tone="neutral">{entry.progress}%</Badge>
             </div>
@@ -97,9 +97,9 @@ export function AcquisitionDashboard() {
 
 function MiniLine({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-2xl bg-slate-50 px-4 py-4">
-      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">{label}</p>
-      <p className="mt-2 text-sm font-semibold text-slate-900">{value}</p>
+    <div className="rounded-2xl border border-sky-100 bg-white/90 px-4 py-4">
+      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-700">{label}</p>
+      <p className="mt-2 text-sm font-semibold text-blue-950">{value}</p>
     </div>
   );
 }

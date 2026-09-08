@@ -9,12 +9,15 @@ interface AuthContextValue {
   loginAs: (role: Role) => User;
   logout: () => void;
   demoUsers: User[];
+  hasSeenSessionHeadsUp: boolean;
+  markSessionHeadsUpSeen: () => void;
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 export function AuthProvider({ children }: PropsWithChildren) {
   const [user, setUser] = useState<User | null>(() => authService.getCurrentUser());
+  const [hasSeenSessionHeadsUp, setHasSeenSessionHeadsUp] = useState(false);
   const setStoreUser = useAuthStore((state) => state.setUser);
 
   useEffect(() => {
@@ -27,16 +30,20 @@ export function AuthProvider({ children }: PropsWithChildren) {
       isAuthenticated: user !== null,
       loginAs: (role: Role) => {
         const nextUser = authService.signIn(role);
+        setHasSeenSessionHeadsUp(false);
         setUser(nextUser);
         return nextUser;
       },
       logout: () => {
         authService.signOut();
+        setHasSeenSessionHeadsUp(false);
         setUser(null);
       },
       demoUsers: authService.getDemoUsers(),
+      hasSeenSessionHeadsUp,
+      markSessionHeadsUpSeen: () => setHasSeenSessionHeadsUp(true),
     }),
-    [user],
+    [hasSeenSessionHeadsUp, user],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

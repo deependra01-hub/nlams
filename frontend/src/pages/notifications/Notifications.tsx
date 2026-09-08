@@ -13,13 +13,13 @@ export function Notifications() {
   const notifications = notificationService.getNotifications();
   const preferences = notificationService.getPreferences();
   const unreadCount = notificationService.getUnreadCount();
-  const [activeNotificationId, setActiveNotificationId] = useState<string | null>(notifications[0]?.id ?? null);
-  const activeNotification = notifications.find((item) => item.id === activeNotificationId) ?? notifications[0] ?? null;
+  const [activeNotificationId, setActiveNotificationId] = useState<string | null>(null);
+  const activeNotification = activeNotificationId ? notifications.find((item) => item.id === activeNotificationId) ?? null : null;
   const launchNotifications = notifications.slice(0, 4);
 
   return (
-    <div className="space-y-6">
-      <section className="grid gap-4 lg:grid-cols-[1fr_0.9fr]">
+    <div className="space-y-7">
+      <section className="grid gap-4 xl:grid-cols-[1fr_0.9fr]">
         <AppCard title="Notifications" description="A light inbox for updates, reminders, and alerts.">
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
             <MetricCard label="Unread" value={String(unreadCount)} detail="Pending attention" icon={BellRing} />
@@ -42,7 +42,7 @@ export function Notifications() {
         {launchNotifications.map((notification) => (
           <article
             key={notification.id}
-            className="rounded-[28px] border border-slate-100 bg-white p-5 shadow-[0_12px_40px_rgba(15,29,47,0.05)]"
+            className="rounded-[28px] border border-sky-100 bg-[linear-gradient(180deg,rgba(255,255,255,0.98)_0%,rgba(244,248,255,0.94)_100%)] p-6 shadow-[0_12px_40px_rgba(15,29,47,0.05)]"
           >
             <div className="flex items-start justify-between gap-4">
               <div>
@@ -74,7 +74,7 @@ export function Notifications() {
       <AppCard title="Preferences" description="Only the toggles needed for the demo profile.">
         <div className="grid gap-3 sm:grid-cols-2">
           {preferences.map((preference) => (
-            <div key={preference.label} className="flex items-center justify-between rounded-2xl bg-slate-50 px-4 py-4">
+            <div key={preference.label} className="flex items-center justify-between rounded-2xl border border-sky-100 bg-white/90 px-4 py-4">
               <div className="flex items-center gap-2">
                 <Settings2 className="h-4 w-4 text-gov-700" />
                 <span className="font-semibold text-slate-800">{preference.label}</span>
@@ -106,9 +106,9 @@ export function Notifications() {
 
 function MiniLine({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-2xl bg-slate-50 px-4 py-4">
-      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">{label}</p>
-      <p className="mt-2 text-sm font-semibold text-slate-900">{value}</p>
+    <div className="rounded-2xl border border-sky-100 bg-white/90 px-4 py-4">
+      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-700">{label}</p>
+      <p className="mt-2 text-sm font-semibold text-blue-950">{value}</p>
     </div>
   );
 }

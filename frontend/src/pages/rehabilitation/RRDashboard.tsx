@@ -13,7 +13,7 @@ import { Home, MapPinned, ShieldCheck, Users } from "lucide-react";
 export function RRDashboard() {
   const navigate = useNavigate();
   const { families, summary, milestones, setActiveFamilyId } = useRehabilitation();
-  const [activeFamilyId, setActiveFamilyIdLocal] = useState<string | null>(families[0]?.id ?? null);
+  const [activeFamilyId, setActiveFamilyIdLocal] = useState<string | null>(null);
 
   const activeFamily = activeFamilyId ? rehabilitationService.getFamilyById(activeFamilyId) : null;
 
@@ -23,8 +23,8 @@ export function RRDashboard() {
   };
 
   return (
-    <div className="space-y-6">
-      <section className="grid gap-4 lg:grid-cols-[1fr_0.9fr]">
+    <div className="space-y-7">
+      <section className="grid gap-4 xl:grid-cols-[1fr_0.9fr]">
         <AppCard title="R&R" description="A lighter view for family rehabilitation and resettlement.">
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
             <MetricCard label="Families" value={String(summary.totalFamilies)} detail="Current queue" icon={Users} />
@@ -45,7 +45,7 @@ export function RRDashboard() {
 
       <section className="grid gap-4 xl:grid-cols-2">
         {families.map((family) => (
-          <article key={family.id} className="rounded-[28px] border border-slate-100 bg-white p-5 shadow-[0_12px_40px_rgba(15,29,47,0.05)]">
+          <article key={family.id} className="rounded-[28px] border border-sky-100 bg-[linear-gradient(180deg,rgba(255,255,255,0.98)_0%,rgba(244,248,255,0.94)_100%)] p-6 shadow-[0_12px_40px_rgba(15,29,47,0.05)]">
             <div className="flex items-start justify-between gap-4">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">{family.village}</p>
@@ -132,9 +132,9 @@ export function RRDashboard() {
 
 function MiniLine({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-2xl bg-slate-50 px-4 py-4">
-      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">{label}</p>
-      <p className="mt-2 text-sm font-semibold text-slate-900">{value}</p>
+    <div className="rounded-2xl border border-sky-100 bg-white/90 px-4 py-4">
+      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-700">{label}</p>
+      <p className="mt-2 text-sm font-semibold text-blue-950">{value}</p>
     </div>
   );
 }

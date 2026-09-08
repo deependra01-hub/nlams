@@ -15,6 +15,7 @@ import {
   Workflow,
 } from "lucide-react";
 import type { ComponentType } from "react";
+import type { Role } from "../../types/domain";
 
 export interface NavItem {
   label: string;
@@ -22,6 +23,7 @@ export interface NavItem {
   icon: ComponentType<{ className?: string }>;
   description: string;
   available: boolean;
+  hiddenRoles?: Role[];
 }
 
 export interface GeoOption {
@@ -72,6 +74,7 @@ export const PRIMARY_NAV_ITEMS: NavItem[] = [
     icon: ReceiptText,
     description: "Assessments and payouts",
     available: true,
+    hiddenRoles: ["state_officer", "district_officer"],
   },
   {
     label: "R&R",
@@ -79,6 +82,7 @@ export const PRIMARY_NAV_ITEMS: NavItem[] = [
     icon: ShieldCheck,
     description: "Families and rehabilitation",
     available: true,
+    hiddenRoles: ["state_officer", "district_officer"],
   },
   {
     label: "Documents",
@@ -86,6 +90,7 @@ export const PRIMARY_NAV_ITEMS: NavItem[] = [
     icon: FileText,
     description: "Versioned evidence",
     available: true,
+    hiddenRoles: ["state_officer", "district_officer"],
   },
   {
     label: "AI Intelligence",
@@ -93,6 +98,7 @@ export const PRIMARY_NAV_ITEMS: NavItem[] = [
     icon: Radar,
     description: "Risk prediction and explanation",
     available: true,
+    hiddenRoles: ["state_officer", "district_officer"],
   },
   {
     label: "Impact Simulator",
@@ -100,6 +106,7 @@ export const PRIMARY_NAV_ITEMS: NavItem[] = [
     icon: Sparkles,
     description: "Scenario comparison",
     available: true,
+    hiddenRoles: ["state_officer", "district_officer"],
   },
   {
     label: "Reports",
@@ -107,6 +114,7 @@ export const PRIMARY_NAV_ITEMS: NavItem[] = [
     icon: ChartColumnBig,
     description: "Exports and summaries",
     available: true,
+    hiddenRoles: ["state_officer", "district_officer"],
   },
   {
     label: "Grievances",
@@ -114,6 +122,7 @@ export const PRIMARY_NAV_ITEMS: NavItem[] = [
     icon: NotebookPen,
     description: "Issue tracking",
     available: true,
+    hiddenRoles: ["state_officer", "district_officer"],
   },
   {
     label: "Notifications",
@@ -128,6 +137,7 @@ export const PRIMARY_NAV_ITEMS: NavItem[] = [
     icon: Users,
     description: "Users and permissions",
     available: true,
+    hiddenRoles: ["state_officer", "district_officer"],
   },
 ];
 
@@ -138,6 +148,7 @@ export const SECONDARY_NAV_ITEMS: NavItem[] = [
     icon: ShieldCheck,
     description: "Parcel review and approval",
     available: true,
+    hiddenRoles: ["state_officer", "district_officer"],
   },
   {
     label: "R&R Families",
@@ -145,6 +156,7 @@ export const SECONDARY_NAV_ITEMS: NavItem[] = [
     icon: Users,
     description: "Family rehab records",
     available: true,
+    hiddenRoles: ["state_officer", "district_officer"],
   },
   {
     label: "Audit Logs",
@@ -152,6 +164,7 @@ export const SECONDARY_NAV_ITEMS: NavItem[] = [
     icon: Workflow,
     description: "Immutable event history",
     available: true,
+    hiddenRoles: ["state_officer", "district_officer"],
   },
 ];
 
@@ -161,4 +174,15 @@ export const GEO_FILTER_OPTIONS: GeoOption[] = [
   { label: "District", value: "district", detail: "District focus" },
 ];
 
-export const DEMO_ROLE_LABEL = "Central Administrator";
+export const ROLE_LABELS: Record<Role, string> = {
+  central_admin: "Central Administrator",
+  state_officer: "State Officer",
+  district_officer: "District Officer",
+  project_agency_officer: "Project Agency Officer",
+  field_officer: "Field Officer",
+  reviewer: "Reviewer",
+};
+
+export function getRoleLabel(role?: Role | null) {
+  return role ? ROLE_LABELS[role] : "Central Administrator";
+}

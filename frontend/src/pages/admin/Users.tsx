@@ -7,11 +7,11 @@ import { adminService } from "../../services/admin.service";
 
 export function Users() {
   const users = adminService.getUsers();
-  const [activeUserId, setActiveUserId] = useState<string | null>(users[0]?.id ?? null);
-  const activeUser = users.find((user) => user.id === activeUserId) ?? users[0] ?? null;
+  const [activeUserId, setActiveUserId] = useState<string | null>(null);
+  const activeUser = activeUserId ? users.find((user) => user.id === activeUserId) ?? null : null;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-7">
       <AppCard title="Users" description="A tiny roster with click-to-open detail.">
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           <MiniLine label="Users" value={String(users.length)} />
@@ -25,7 +25,7 @@ export function Users() {
         {users.map((user) => (
           <article
             key={user.id}
-            className="rounded-[28px] border border-slate-100 bg-white p-5 shadow-[0_12px_40px_rgba(15,29,47,0.05)]"
+            className="rounded-[28px] border border-sky-100 bg-[linear-gradient(180deg,rgba(255,255,255,0.98)_0%,rgba(244,248,255,0.94)_100%)] p-6 shadow-[0_12px_40px_rgba(15,29,47,0.05)]"
           >
             <div className="flex items-start justify-between gap-4">
               <div>
@@ -69,9 +69,9 @@ export function Users() {
 
 function MiniLine({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-2xl bg-slate-50 px-4 py-4">
-      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">{label}</p>
-      <p className="mt-2 text-sm font-semibold text-slate-900">{value}</p>
+    <div className="rounded-2xl border border-sky-100 bg-white/90 px-4 py-4">
+      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-700">{label}</p>
+      <p className="mt-2 text-sm font-semibold text-blue-950">{value}</p>
     </div>
   );
 }

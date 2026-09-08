@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Outlet, useLocation } from "react-router-dom";
-import { Bell, ChevronDown, Menu, UserCircle2 } from "lucide-react";
+import { Bell, ChevronDown, HelpCircle, Menu, Plus, Sparkles, UserCircle2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useUiStore } from "../../store/ui.store";
 import { useFilterStore } from "../../store/filter.store";
@@ -9,7 +9,7 @@ import { IconButton } from "../common/IconButton";
 import { Header } from "./Header";
 import { Sidebar } from "./Sidebar";
 import { getRouteHeader } from "../../app/config/routes";
-import { DEMO_ROLE_LABEL, GEO_FILTER_OPTIONS } from "../../app/config/navigation";
+import { GEO_FILTER_OPTIONS, getRoleLabel } from "../../app/config/navigation";
 import { Button } from "../common/Button";
 import { SearchBar } from "../common/SearchBar";
 import { Select } from "../common/Select";
@@ -20,6 +20,7 @@ import { useAuth } from "../../context/AuthContext";
 
 export function MainLayout() {
   const location = useLocation();
+  const { user, hasSeenSessionHeadsUp, markSessionHeadsUpSeen } = useAuth();
   const {
     sidebarCollapsed,
     setSidebarCollapsed,
@@ -30,13 +31,29 @@ export function MainLayout() {
   const { unreadCount } = useNotificationStore();
   const navigate = useNavigate();
   const routeHeader = useMemo(() => getRouteHeader(location.pathname), [location.pathname]);
+  const [sessionHeadsUpOpen, setSessionHeadsUpOpen] = useState(false);
+  const welcomeRequested = (location.state as { showWelcome?: boolean } | null)?.showWelcome === true;
 
   useEffect(() => {
     setMobileNavOpen(false);
   }, [location.pathname, setMobileNavOpen]);
 
+  useEffect(() => {
+    if (!user) {
+      setSessionHeadsUpOpen(false);
+      return;
+    }
+
+    setSessionHeadsUpOpen(Boolean(welcomeRequested && !hasSeenSessionHeadsUp));
+  }, [hasSeenSessionHeadsUp, user, welcomeRequested]);
+
+  const closeSessionHeadsUp = () => {
+    markSessionHeadsUpSeen();
+    setSessionHeadsUpOpen(false);
+  };
+
   return (
-    <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.96),transparent_34%),radial-gradient(circle_at_top_right,rgba(224,236,255,0.78),transparent_30%),linear-gradient(180deg,#f8fafc_0%,#eef3f9_100%)] text-slate-900">
+    <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.98),transparent_34%),radial-gradient(circle_at_top_right,rgba(233,229,255,0.86),transparent_24%),linear-gradient(180deg,#f7f9ff_0%,#edf3ff_100%)] text-slate-900">
       <MobileNavigation open={mobileNavOpen} onClose={() => setMobileNavOpen(false)}>
         <Sidebar
           mobile
@@ -48,16 +65,16 @@ export function MainLayout() {
         />
       </MobileNavigation>
 
-      <div className="mx-auto flex min-h-screen w-full max-w-[1520px] gap-5 px-4 py-4 md:px-6 lg:px-8">
-        <div className="sticky top-4 hidden h-[calc(100vh-2rem)] lg:block">
+      <div className="mx-auto flex min-h-screen w-full max-w-[1520px] gap-6 px-3 py-3 md:px-5 lg:px-6">
+        <div className="sticky top-3 hidden h-[calc(100vh-1.5rem)] lg:block">
           <Sidebar
             collapsed={sidebarCollapsed}
             onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
           />
         </div>
 
-        <div className="min-w-0 flex-1 space-y-4">
-          <header className="sticky top-4 z-20 rounded-[28px] border border-white/70 bg-white/88 px-4 py-3 shadow-[0_18px_50px_rgba(15,29,47,0.08)] backdrop-blur-xl">
+        <div className="min-w-0 flex-1 space-y-5">
+          <header className="sticky top-3 z-20 rounded-[28px] border border-white/80 bg-white/92 px-4 py-3 shadow-[0_18px_50px_rgba(15,29,47,0.08)] backdrop-blur-xl">
             <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
               <div className="flex items-center gap-3">
                 <IconButton
@@ -67,10 +84,10 @@ export function MainLayout() {
                   onClick={() => setMobileNavOpen(true)}
                 />
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.24em] text-gov-700">
+                  <p className="text-xs font-semibold uppercase tracking-[0.24em] text-violet-700">
                     NLAMS
                   </p>
-                  <p className="text-sm font-semibold text-slate-900">{DEMO_ROLE_LABEL}</p>
+                  <p className="text-sm font-semibold text-slate-900">{getRoleLabel(user?.role)}</p>
                 </div>
               </div>
 
@@ -78,7 +95,7 @@ export function MainLayout() {
                 <SearchBar
                   label="Global search"
                   placeholder="Search projects, parcels, officers"
-                  className="max-w-md"
+                  className="max-w-xl"
                   value={searchText}
                   onChange={(event) => setSearchText(event.target.value)}
                 />
@@ -93,6 +110,17 @@ export function MainLayout() {
                     </option>
                   ))}
                 </Select>
+
+                <Button
+                  variant="secondary"
+                  leadingIcon={Sparkles}
+                  className="hidden border-violet-200 bg-[linear-gradient(90deg,rgba(109,93,252,0.12)_0%,rgba(46,122,240,0.12)_100%)] text-violet-800 sm:inline-flex"
+                >
+                  NLAMS AI
+                </Button>
+
+                <IconButton icon={Plus} label="Create new item" />
+                <IconButton icon={HelpCircle} label="Help center" />
 
                 <div className="hidden items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-800 sm:flex">
                   <span className="h-2 w-2 rounded-full bg-emerald-500" />
@@ -123,7 +151,11 @@ export function MainLayout() {
             actions={
               <>
                 <Badge tone="primary">Demo mode</Badge>
-                <Button variant="secondary" onClick={() => setSidebarCollapsed(!sidebarCollapsed)}>
+                <Button
+                  variant="secondary"
+                  onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+                  className="border-violet-200 bg-white text-violet-800"
+                >
                   {sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
                 </Button>
               </>
@@ -135,6 +167,20 @@ export function MainLayout() {
           </main>
         </div>
       </div>
+
+      <HeadsUpDialog
+        open={sessionHeadsUpOpen}
+        title="Welcome back"
+        description="The shell stays minimal by design. Use the sidebar and the light dashboard cards to open detailed modules only when you need them."
+        onClose={closeSessionHeadsUp}
+        primaryAction={<Button onClick={closeSessionHeadsUp}>Got it</Button>}
+      >
+        <div className="grid gap-3 sm:grid-cols-3">
+          <ProfileStat label="Dashboards" value="One clean entry" />
+          <ProfileStat label="GIS" value="Map is visible" />
+          <ProfileStat label="Heads up" value="Shown once per login" />
+        </div>
+      </HeadsUpDialog>
     </div>
   );
 }
@@ -161,7 +207,7 @@ function ProfileMenu() {
       <div className="absolute right-0 z-20 mt-2 w-64 rounded-[24px] border border-white/70 bg-white/96 p-3 shadow-[0_18px_50px_rgba(15,29,47,0.10)] backdrop-blur-xl">
         <div className="rounded-2xl bg-slate-50 px-3 py-2">
           <p className="text-sm font-semibold text-slate-900">{user?.name ?? "Demo Officer"}</p>
-          <p className="text-xs text-slate-500">{DEMO_ROLE_LABEL}</p>
+          <p className="text-xs text-slate-500">{getRoleLabel(user?.role)}</p>
         </div>
         <div className="mt-3 space-y-1 text-sm">
           <MenuButton label="View profile" onClick={() => setProfileOpen(true)} />

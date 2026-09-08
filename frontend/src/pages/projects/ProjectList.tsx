@@ -13,7 +13,7 @@ import { BarChart3, MapPinned, Users } from "lucide-react";
 export function ProjectList() {
   const navigate = useNavigate();
   const { projects, stats, setActiveProjectId } = useProjects();
-  const [activeProjectId, setActiveProjectIdLocal] = useState<string | null>(projects[0]?.id ?? null);
+  const [activeProjectId, setActiveProjectIdLocal] = useState<string | null>(null);
 
   const activeProject = activeProjectId ? projectService.getProjectById(activeProjectId) : null;
 
@@ -23,7 +23,7 @@ export function ProjectList() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-7">
       <section className="grid gap-4 xl:grid-cols-[1.05fr_0.95fr]">
         <AppCard title="Projects" description="A quiet portfolio view. Open a card for more detail.">
           <div className="grid gap-3 sm:grid-cols-3">
@@ -46,7 +46,7 @@ export function ProjectList() {
         {projects.map((project) => (
           <article
             key={project.id}
-            className="rounded-[28px] border border-slate-100 bg-white p-5 shadow-[0_12px_40px_rgba(15,29,47,0.05)]"
+            className="rounded-[28px] border border-sky-100 bg-[linear-gradient(180deg,rgba(255,255,255,0.98)_0%,rgba(244,248,255,0.94)_100%)] p-6 shadow-[0_12px_40px_rgba(15,29,47,0.05)]"
           >
             <div className="flex items-start justify-between gap-4">
               <div>
@@ -99,9 +99,9 @@ export function ProjectList() {
 
 function MiniLine({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-2xl bg-slate-50 px-4 py-4">
-      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">{label}</p>
-      <p className="mt-2 text-sm font-semibold text-slate-900">{value}</p>
+    <div className="rounded-2xl border border-sky-100 bg-white/90 px-4 py-4">
+      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-700">{label}</p>
+      <p className="mt-2 text-sm font-semibold text-blue-950">{value}</p>
     </div>
   );
 }
