@@ -80,9 +80,9 @@ export function RRDashboard() {
         <AppCard title="Timeline" description="The workflow stays visual but compact.">
           <div className="space-y-3">
             {milestones.map((milestone) => (
-              <div key={milestone.label} className="rounded-2xl bg-slate-50 px-4 py-4">
+              <div key={milestone.label} className="rounded-2xl border border-sky-100 bg-white/90 px-4 py-4">
                 <div className="flex items-center justify-between gap-3">
-                  <p className="font-semibold text-slate-900">{milestone.label}</p>
+                  <p className="font-semibold text-slate-950">{milestone.label}</p>
                   <Badge tone={milestone.status === "done" ? "success" : milestone.status === "current" ? "primary" : "neutral"}>
                     {milestone.status}
                   </Badge>
@@ -99,12 +99,12 @@ export function RRDashboard() {
 
         <AppCard title="Related records" description="Quick exits, not deep navigation.">
           <div className="grid gap-3">
-            <Link to="/compensation" className="rounded-2xl border border-slate-100 bg-slate-50 px-4 py-4 transition hover:border-gov-200 hover:bg-white">
-              <p className="font-semibold text-slate-900">Compensation</p>
+            <Link to="/compensation" className="rounded-2xl border border-sky-100 bg-white/90 px-4 py-4 transition hover:border-gov-200 hover:bg-gov-50">
+              <p className="font-semibold text-slate-950">Compensation</p>
               <p className="mt-1 text-sm leading-6 text-slate-600">Open the linked compensation cases.</p>
             </Link>
-            <Link to="/parcels" className="rounded-2xl border border-slate-100 bg-slate-50 px-4 py-4 transition hover:border-gov-200 hover:bg-white">
-              <p className="font-semibold text-slate-900">Parcels</p>
+            <Link to="/parcels" className="rounded-2xl border border-sky-100 bg-white/90 px-4 py-4 transition hover:border-gov-200 hover:bg-gov-50">
+              <p className="font-semibold text-slate-950">Parcels</p>
               <p className="mt-1 text-sm leading-6 text-slate-600">Check the parcel behind the family record.</p>
             </Link>
           </div>

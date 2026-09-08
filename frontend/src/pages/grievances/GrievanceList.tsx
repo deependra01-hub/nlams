@@ -26,7 +26,7 @@ export function GrievanceList() {
   );
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-7">
       <AppCard title="Grievances" description="Track complaints, reviews, and closure states.">
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
           <MetricCard label="Total" value={String(summary.total)} detail="All logged grievances." icon={ListTodo} />
@@ -44,7 +44,9 @@ export function GrievanceList() {
             onClick={() => setStatus(item)}
             className={[
               "rounded-full border px-3 py-2 text-sm font-semibold transition",
-              status === item ? "border-gov-300 bg-gov-50 text-gov-800" : "border-slate-200 bg-white text-slate-600",
+              status === item
+                ? "border-gov-300 bg-gov-50 text-gov-800"
+                : "border-sky-100 bg-white/90 text-slate-600 hover:border-gov-200 hover:bg-gov-50",
             ].join(" ")}
           >
             {item === "all" ? "All statuses" : grievanceService.getStatusLabel(item)}
@@ -57,7 +59,9 @@ export function GrievanceList() {
             onClick={() => setPriority(item)}
             className={[
               "rounded-full border px-3 py-2 text-sm font-semibold transition",
-              priority === item ? "border-gov-300 bg-gov-50 text-gov-800" : "border-slate-200 bg-white text-slate-600",
+              priority === item
+                ? "border-gov-300 bg-gov-50 text-gov-800"
+                : "border-sky-100 bg-white/90 text-slate-600 hover:border-gov-200 hover:bg-gov-50",
             ].join(" ")}
           >
             {item === "all" ? "All priorities" : item}
@@ -71,18 +75,18 @@ export function GrievanceList() {
             key={item.id}
             type="button"
             onClick={() => navigate(`/grievances/${item.id}`)}
-            className="rounded-2xl border border-slate-200 bg-white p-5 text-left shadow-soft transition hover:-translate-y-0.5 hover:border-gov-200 hover:bg-gov-50"
+            className="rounded-[28px] border border-sky-100 bg-[linear-gradient(180deg,rgba(255,255,255,0.98)_0%,rgba(244,248,255,0.94)_100%)] p-6 text-left shadow-[0_12px_40px_rgba(15,29,47,0.05)] transition hover:-translate-y-0.5 hover:border-gov-200 hover:bg-white"
           >
             <div className="flex items-start justify-between gap-3">
               <div>
-                <p className="text-lg font-semibold text-slate-900">{item.subject}</p>
-                <p className="mt-1 text-sm text-slate-600">{item.summary}</p>
+                <p className="text-lg font-semibold text-slate-950">{item.subject}</p>
+                <p className="mt-2 text-sm leading-6 text-slate-600">{item.summary}</p>
               </div>
               <Badge tone={item.priority === "critical" ? "danger" : item.priority === "high" ? "warning" : "neutral"}>
                 {item.priority}
               </Badge>
             </div>
-            <div className="mt-4 grid gap-3 sm:grid-cols-2">
+            <div className="mt-5 grid gap-3 sm:grid-cols-2">
               <Info label="Complainant" value={item.complainant} />
               <Info label="Status" value={grievanceService.getStatusLabel(item.status)} />
               <Info label="Assigned to" value={item.assignedTo} />
@@ -104,9 +108,9 @@ export function GrievanceList() {
 
 function Info({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-2xl bg-slate-50 px-4 py-3">
-      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">{label}</p>
-      <p className="mt-1 text-sm font-semibold text-slate-800">{value}</p>
+    <div className="rounded-2xl border border-sky-100 bg-white/90 px-4 py-4">
+      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-700">{label}</p>
+      <p className="mt-2 text-sm font-semibold text-blue-950">{value}</p>
     </div>
   );
 }

@@ -10,7 +10,7 @@ export function Payments() {
   const payments = compensationService.getPayments();
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-7">
       <AppCard
         title="Payments"
         description="Disbursement queue, status, and verifier notes for the compensation phase."
@@ -24,19 +24,22 @@ export function Payments() {
       {payments.length > 0 ? (
         <div className="grid gap-4">
           {payments.map((payment) => (
-            <div key={payment.id} className="rounded-2xl border border-slate-200 bg-white p-5 shadow-soft">
+            <div
+              key={payment.id}
+              className="rounded-[28px] border border-sky-100 bg-[linear-gradient(180deg,rgba(255,255,255,0.98)_0%,rgba(244,248,255,0.94)_100%)] p-6 shadow-[0_12px_40px_rgba(15,29,47,0.05)]"
+            >
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
                     {payment.parcelId}
                   </p>
-                  <h2 className="mt-1 text-xl font-semibold text-slate-900">{payment.beneficiary}</h2>
-                  <p className="mt-2 text-sm text-slate-600">{payment.remarks}</p>
+                  <h2 className="mt-2 text-xl font-semibold text-slate-950">{payment.beneficiary}</h2>
+                  <p className="mt-2 text-sm leading-6 text-slate-600">{payment.remarks}</p>
                 </div>
                 <PaymentStatus status={payment.status} />
               </div>
 
-              <div className="mt-4 grid gap-3 md:grid-cols-4">
+              <div className="mt-5 grid gap-3 md:grid-cols-4">
                 <Info label="Amount" value={formatCurrencyInCrore(payment.amountLakh / 100)} />
                 <Info label="Mode" value={payment.mode.replaceAll("_", " ")} />
                 <Info label="Due date" value={payment.dueDate} />
@@ -44,7 +47,7 @@ export function Payments() {
               </div>
 
               {payment.paidDate ? (
-                <p className="mt-4 rounded-xl bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-800">
+                <p className="mt-5 rounded-2xl border border-emerald-100 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-800">
                   Paid on {payment.paidDate}
                 </p>
               ) : null}
@@ -64,9 +67,9 @@ export function Payments() {
 
 function Info({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-xl bg-slate-50 px-3 py-3">
-      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">{label}</p>
-      <p className="mt-1 text-sm font-semibold text-slate-800">{value}</p>
+    <div className="rounded-2xl border border-sky-100 bg-white/90 px-4 py-4">
+      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-700">{label}</p>
+      <p className="mt-2 text-sm font-semibold text-blue-950">{value}</p>
     </div>
   );
 }

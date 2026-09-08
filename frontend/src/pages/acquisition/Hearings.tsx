@@ -17,7 +17,7 @@ export function Hearings() {
   return (
     <div className="grid gap-4 xl:grid-cols-[0.8fr_1.2fr]">
       <AppCard title="Hearing cases" description="Review the hearing queue and open hearings.">
-        <div className="space-y-2">
+        <div className="space-y-3">
           {cases.map((entry) => (
             <button
               key={entry.id}
@@ -27,14 +27,14 @@ export function Hearings() {
                 setActiveCaseId(entry.id);
               }}
               className={[
-                "w-full rounded-2xl border px-4 py-4 text-left transition",
-                activeCase.id === entry.id ? "border-gov-300 bg-gov-50" : "border-slate-200 bg-white",
+                "w-full rounded-[28px] border px-4 py-4 text-left transition",
+                activeCase.id === entry.id ? "border-gov-300 bg-gov-50" : "border-sky-100 bg-white/90 hover:border-gov-200 hover:bg-gov-50",
               ].join(" ")}
             >
               <div className="flex items-center justify-between gap-3">
                 <div>
-                  <p className="font-semibold text-slate-900">{entry.title}</p>
-                  <p className="mt-1 text-sm text-slate-600">{entry.notifications[0] ?? "No notice"}</p>
+                  <p className="font-semibold text-slate-950">{entry.title}</p>
+                  <p className="mt-2 text-sm leading-6 text-slate-600">{entry.notifications[0] ?? "No notice"}</p>
                 </div>
                 <AcquisitionStage stage={entry.stage} />
               </div>

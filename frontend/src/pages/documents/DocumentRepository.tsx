@@ -68,14 +68,14 @@ export function DocumentRepository() {
         </AppCard>
       </section>
 
-      <div className="grid gap-3 rounded-[28px] border border-slate-100 bg-white p-4 shadow-[0_12px_40px_rgba(15,29,47,0.05)] lg:grid-cols-[1fr_auto] lg:items-end">
+      <div className="grid gap-3 rounded-[28px] border border-sky-100 bg-[linear-gradient(180deg,rgba(255,255,255,0.98)_0%,rgba(244,248,255,0.94)_100%)] p-5 shadow-[0_12px_40px_rgba(15,29,47,0.05)] lg:grid-cols-[1fr_auto] lg:items-end">
         <label className="grid gap-2">
-          <span className="text-sm font-semibold text-slate-900">Search documents</span>
+          <span className="text-sm font-semibold text-slate-950">Search documents</span>
           <input
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             placeholder="Search title, reference, file, source, or tag"
-            className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-gov-300 focus:bg-white"
+            className="w-full rounded-2xl border border-sky-100 bg-white/90 px-4 py-3 text-sm outline-none transition focus:border-gov-300 focus:bg-white"
           />
         </label>
 
@@ -89,7 +89,7 @@ export function DocumentRepository() {
                 "rounded-full border px-3 py-2 text-sm font-semibold transition",
                 status === item
                   ? "border-gov-300 bg-gov-50 text-gov-800"
-                  : "border-slate-200 bg-white text-slate-600 hover:border-gov-200 hover:bg-gov-50",
+                  : "border-sky-100 bg-white/90 text-slate-600 hover:border-gov-200 hover:bg-gov-50",
               ].join(" ")}
             >
               {item === "all" ? "All statuses" : documentService.getStatusLabel(item)}

@@ -29,9 +29,9 @@ export function ScenarioCreate() {
 
 function Field({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-2xl bg-slate-50 px-4 py-3">
-      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">{label}</p>
-      <p className="mt-1 text-sm font-semibold text-slate-800">{value}</p>
+    <div className="rounded-2xl border border-sky-100 bg-white/90 px-4 py-4">
+      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-700">{label}</p>
+      <p className="mt-2 text-sm font-semibold text-blue-950">{value}</p>
     </div>
   );
 }

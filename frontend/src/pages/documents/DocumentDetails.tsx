@@ -45,7 +45,7 @@ export function DocumentDetails() {
   const relatedParcel = documentService.getRelatedParcel(document);
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-7">
       <AppCard
         title={document.title}
         description="Detailed document review with version history and linked operational records."
@@ -99,9 +99,9 @@ export function DocumentDetails() {
 
 function CrossLink({ label, value, href }: { label: string; value: string; href?: string }) {
   const content = (
-    <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 transition hover:border-gov-300 hover:bg-gov-50">
-      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">{label}</p>
-      <p className="mt-1 text-sm font-semibold text-slate-800">{value}</p>
+    <div className="rounded-2xl border border-sky-100 bg-white/90 px-4 py-4 transition hover:border-gov-300 hover:bg-gov-50">
+      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-700">{label}</p>
+      <p className="mt-2 text-sm font-semibold text-blue-950">{value}</p>
     </div>
   );
 

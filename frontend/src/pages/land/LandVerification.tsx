@@ -23,7 +23,7 @@ export function LandVerification() {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-7">
       <AppCard
         title="Land verification"
         description="A focused workspace for review, approval, and correction of parcel records."
@@ -43,16 +43,16 @@ export function LandVerification() {
                 type="button"
                 onClick={() => handleSelect(parcel)}
                 className={[
-                  "w-full rounded-2xl border px-4 py-3 text-left transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gov-500 focus-visible:ring-offset-2",
+                  "w-full rounded-[28px] border px-4 py-4 text-left transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gov-500 focus-visible:ring-offset-2",
                   selected.id === parcel.id
                     ? "border-gov-300 bg-gov-50"
-                    : "border-slate-200 bg-white hover:bg-slate-50",
+                    : "border-sky-100 bg-white/90 hover:border-gov-200 hover:bg-gov-50",
                 ].join(" ")}
               >
                 <div className="flex items-center justify-between gap-3">
                   <div>
-                    <p className="font-semibold text-slate-900">{parcel.surveyNo}</p>
-                    <p className="text-sm text-slate-500">
+                    <p className="font-semibold text-slate-950">{parcel.surveyNo}</p>
+                    <p className="text-sm leading-6 text-slate-500">
                       {parcel.ownerName} · {parcel.village}, {parcel.district}
                     </p>
                   </div>

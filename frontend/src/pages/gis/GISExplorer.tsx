@@ -125,7 +125,7 @@ export function GISExplorer() {
                   key={feature.id}
                   type="button"
                   onClick={() => focusFeature(feature)}
-                  className="w-full rounded-2xl border border-slate-100 bg-slate-50 px-4 py-4 text-left transition hover:border-gov-200 hover:bg-white"
+                className="w-full rounded-[28px] border border-sky-100 bg-white/90 px-4 py-4 text-left transition hover:border-gov-200 hover:bg-gov-50"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div>
@@ -143,7 +143,7 @@ export function GISExplorer() {
           <AppCard title="Quick exits" description="Jump to the linked record when the map needs a deeper view.">
             <div className="grid gap-3">
               {visibleFeatures.slice(0, 3).map((feature) => (
-                <div key={feature.id} className="rounded-2xl border border-slate-100 bg-slate-50 px-4 py-4">
+                <div key={feature.id} className="rounded-[28px] border border-sky-100 bg-white/90 px-4 py-4">
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <p className="font-semibold text-blue-950">{feature.label}</p>
@@ -187,7 +187,7 @@ export function GISExplorer() {
 
 function MiniLine({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-2xl bg-slate-50 px-4 py-4">
+    <div className="rounded-2xl border border-sky-100 bg-white/90 px-4 py-4">
       <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-700">{label}</p>
       <p className="mt-2 text-sm font-semibold text-blue-950">{value}</p>
     </div>

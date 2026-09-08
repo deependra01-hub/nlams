@@ -315,15 +315,15 @@ export function NationalDashboard() {
 
       <section className="grid gap-4 xl:grid-cols-[1.2fr_1fr_0.8fr]">
         <AppCard title="Recent projects" description="The latest portfolio moves in a lighter table.">
-          <div className="overflow-hidden rounded-2xl border border-slate-100">
-            <div className="grid grid-cols-[1.3fr_1fr_0.6fr_0.8fr_0.7fr] gap-2 bg-slate-50 px-4 py-3 text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">
+          <div className="overflow-hidden rounded-[28px] border border-sky-100 bg-[linear-gradient(180deg,rgba(255,255,255,0.98)_0%,rgba(244,248,255,0.94)_100%)] shadow-[0_12px_40px_rgba(15,29,47,0.05)]">
+            <div className="grid grid-cols-[1.3fr_1fr_0.6fr_0.8fr_0.7fr] gap-2 border-b border-sky-100 bg-white/80 px-4 py-3 text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
               <span>Project name</span>
               <span>Location</span>
               <span>Plots</span>
               <span>Area</span>
               <span>Status</span>
             </div>
-            <div className="divide-y divide-slate-100 bg-white">
+            <div className="divide-y divide-sky-100 bg-transparent">
               {PROJECT_ROWS.map((row) => (
                 <div key={row.name} className="grid grid-cols-[1.3fr_1fr_0.6fr_0.8fr_0.7fr] gap-2 px-4 py-4 text-sm">
                   <span className="font-semibold text-violet-700">{row.name}</span>
@@ -340,7 +340,7 @@ export function NationalDashboard() {
         <AppCard title="Activity feed" description="A quick glance at what changed most recently.">
           <div className="space-y-3">
             {ACTIVITY_ROWS.map((item) => (
-              <div key={item.title} className="rounded-2xl bg-slate-50 px-4 py-4">
+              <div key={item.title} className="rounded-[28px] border border-sky-100 bg-white/90 px-4 py-4">
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <p className="font-semibold text-blue-950">{item.title}</p>
@@ -413,9 +413,9 @@ export function NationalDashboard() {
         {activeFeature ? (
           <div className="grid gap-3 sm:grid-cols-3">
             {activeFeature.facts.map((fact) => (
-              <div key={fact} className="rounded-2xl bg-slate-50 px-4 py-4">
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Heads up</p>
-                <p className="mt-2 text-sm font-semibold text-slate-800">{fact}</p>
+              <div key={fact} className="rounded-2xl border border-sky-100 bg-white/90 px-4 py-4">
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-700">Heads up</p>
+                <p className="mt-2 text-sm font-semibold text-blue-950">{fact}</p>
               </div>
             ))}
           </div>
