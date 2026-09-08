@@ -11,10 +11,10 @@ import { Sidebar } from "./Sidebar";
 import { getRouteHeader } from "../../app/config/routes";
 import { GEO_FILTER_OPTIONS, getRoleLabel } from "../../app/config/navigation";
 import { Button } from "../common/Button";
+import { InfoRibbon } from "../common/InfoRibbon";
 import { SearchBar } from "../common/SearchBar";
 import { Select } from "../common/Select";
 import { MobileNavigation } from "./MobileNavigation";
-import { HeadsUpDialog } from "../common/HeadsUpDialog";
 import { useAuth } from "../../context/AuthContext";
 import { notificationService } from "../../services/notification.service";
 
@@ -26,7 +26,7 @@ export function MainLayout() {
   const { unreadCount } = useNotificationStore();
   const navigate = useNavigate();
   const routeHeader = useMemo(() => getRouteHeader(location.pathname), [location.pathname]);
-  const [sessionHeadsUpOpen, setSessionHeadsUpOpen] = useState(false);
+  const [sessionRibbonVisible, setSessionRibbonVisible] = useState(false);
   const welcomeRequested = (location.state as { showWelcome?: boolean } | null)?.showWelcome === true;
 
   useEffect(() => {
@@ -35,16 +35,16 @@ export function MainLayout() {
 
   useEffect(() => {
     if (!user) {
-      setSessionHeadsUpOpen(false);
+      setSessionRibbonVisible(false);
       return;
     }
 
-    setSessionHeadsUpOpen(Boolean(welcomeRequested && !hasSeenSessionHeadsUp));
+    setSessionRibbonVisible(Boolean(welcomeRequested && !hasSeenSessionHeadsUp));
   }, [hasSeenSessionHeadsUp, user, welcomeRequested]);
 
-  const closeSessionHeadsUp = () => {
+  const closeSessionRibbon = () => {
     markSessionHeadsUpSeen();
-    setSessionHeadsUpOpen(false);
+    setSessionRibbonVisible(false);
   };
 
   return (
@@ -145,39 +145,36 @@ export function MainLayout() {
             }
           />
 
+          {sessionRibbonVisible ? (
+            <InfoRibbon
+              title="Notifications and alerts"
+              description="A quick session heads-up for unread notifications and active alerts."
+              icon={Bell}
+              items={[
+                { label: "Unread", value: String(notificationService.getUnreadCount()) },
+                { label: "Alerts", value: String(notificationService.getNotifications().filter((item) => item.kind === "alert").length) },
+                { label: "Updates", value: String(notificationService.getNotifications().filter((item) => item.kind !== "alert").length) },
+              ]}
+              action={{ label: "Open notifications", onClick: () => navigate("/notifications") }}
+              onDismiss={closeSessionRibbon}
+            >
+              <div className="grid gap-3 sm:grid-cols-3">
+                {notificationService.getNotifications().slice(0, 3).map((item) => (
+                  <div key={item.id} className="rounded-2xl border border-white/70 bg-white/85 px-4 py-4">
+                    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-700">{item.kind}</p>
+                    <p className="mt-2 text-sm font-semibold text-blue-950">{item.title}</p>
+                    <p className="mt-1 text-sm leading-6 text-blue-700/75">{item.message}</p>
+                  </div>
+                ))}
+              </div>
+            </InfoRibbon>
+          ) : null}
+
           <main className="min-w-0 pb-10">
             <Outlet />
           </main>
         </div>
       </div>
-
-      <HeadsUpDialog
-        open={sessionHeadsUpOpen}
-        title="Notifications and alerts"
-        description="A quick session heads-up for unread notifications and active alerts."
-        onClose={closeSessionHeadsUp}
-        primaryAction={<Button onClick={closeSessionHeadsUp}>Got it</Button>}
-      >
-        <div className="grid gap-3 sm:grid-cols-3">
-          <ProfileStat label="Unread" value={String(notificationService.getUnreadCount())} />
-          <ProfileStat label="Alerts" value={notificationService.getNotifications().filter((item) => item.kind === "alert").length.toString()} />
-          <ProfileStat label="Updates" value={notificationService.getNotifications().filter((item) => item.kind !== "alert").length.toString()} />
-        </div>
-        <div className="mt-5 grid gap-3">
-          {notificationService.getNotifications().slice(0, 3).map((item) => (
-            <div key={item.id} className="rounded-2xl border border-sky-100 bg-white/90 px-4 py-4">
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-700">{item.kind}</p>
-                  <p className="mt-2 text-sm font-semibold text-blue-950">{item.title}</p>
-                  <p className="mt-1 text-sm leading-6 text-blue-700/75">{item.message}</p>
-                </div>
-                <span className="text-xs uppercase tracking-[0.16em] text-slate-500">{item.createdAt}</span>
-              </div>
-            </div>
-          ))}
-        </div>
-      </HeadsUpDialog>
     </div>
   );
 }
@@ -234,14 +231,5 @@ function MenuButton({
     >
       {label}
     </button>
-  );
-}
-
-function ProfileStat({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="rounded-2xl bg-slate-50 px-4 py-4">
-      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">{label}</p>
-      <p className="mt-2 text-sm font-semibold text-slate-900">{value}</p>
-    </div>
   );
 }

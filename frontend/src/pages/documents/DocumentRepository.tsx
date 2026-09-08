@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { AppCard } from "../../components/common/AppCard";
 import { Badge } from "../../components/common/Badge";
 import { Button } from "../../components/common/Button";
+import { InfoRibbon } from "../../components/common/InfoRibbon";
 import { MetricCard } from "../../components/common/MetricCard";
 import { useDocuments } from "../../hooks/useDocuments";
 import { documentService } from "../../services/document.service";
@@ -46,6 +47,17 @@ export function DocumentRepository() {
 
   return (
     <div className="space-y-7">
+      <InfoRibbon
+        title="Document ribbon"
+        description="Document counts, reviews, and version history are carried in a compact ribbon so the search view remains calm."
+        items={[
+          { label: "Documents", value: String(stats.totalDocuments) },
+          { label: "Verified", value: String(stats.verifiedDocuments) },
+          { label: "In review", value: String(stats.pendingReviewDocuments) },
+          { label: "Versions", value: String(stats.totalVersions) },
+        ]}
+      />
+
       <section className="grid gap-4 xl:grid-cols-[1fr_0.9fr]">
         <AppCard title="Document repository" description="A quiet evidence shelf. Open records only when you need them.">
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">

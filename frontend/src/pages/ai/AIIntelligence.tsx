@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { AppCard } from "../../components/common/AppCard";
 import { Badge } from "../../components/common/Badge";
 import { Button } from "../../components/common/Button";
+import { InfoRibbon } from "../../components/common/InfoRibbon";
 import { MetricCard } from "../../components/common/MetricCard";
 import { aiService } from "../../services/ai.service";
 import type { AIInsight } from "../../types/ai.types";
@@ -14,6 +15,17 @@ export function AIIntelligence() {
 
   return (
     <div className="space-y-7">
+      <InfoRibbon
+        title="AI ribbon"
+        description="Risk scan totals, average score, and critical items stay visible in a slim ribbon instead of a dense panel."
+        items={[
+          { label: "Scans", value: String(summary.totalScans) },
+          { label: "Average", value: `${summary.averageScore}/100` },
+          { label: "Critical", value: String(summary.criticalRisks) },
+          { label: "Actions", value: String(summary.recommendedActions) },
+        ]}
+      />
+
       <section className="grid gap-4 xl:grid-cols-[1fr_0.9fr]">
         <AppCard title="AI intelligence" description="A minimal risk surface with just enough signal to act.">
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">

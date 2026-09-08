@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { AppCard } from "../../components/common/AppCard";
 import { Badge } from "../../components/common/Badge";
 import { Button } from "../../components/common/Button";
+import { InfoRibbon } from "../../components/common/InfoRibbon";
 import { MetricCard } from "../../components/common/MetricCard";
 import { reportService } from "../../services/report.service";
 import { BarChart3, FileChartColumn, FileDown, ListChecks } from "lucide-react";
@@ -14,6 +15,17 @@ export function Reports() {
 
   return (
     <div className="space-y-7">
+      <InfoRibbon
+        title="Reports ribbon"
+        description="The report counts stay inline so users can scan readiness without opening a separate info surface."
+        items={[
+          { label: "Reports", value: String(reports.length) },
+          { label: "Ready", value: String(reports.filter((report) => report.status === "ready").length) },
+          { label: "Scheduled", value: String(reports.filter((report) => report.status === "scheduled").length) },
+          { label: "Drafts", value: String(reports.filter((report) => report.status === "draft").length) },
+        ]}
+      />
+
       <section className="grid gap-4 xl:grid-cols-[1fr_0.9fr]">
         <AppCard title="Reports" description="Summary reports stay light until you open one.">
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">

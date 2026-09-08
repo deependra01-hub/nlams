@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { AppCard } from "../../components/common/AppCard";
 import { Badge } from "../../components/common/Badge";
 import { Button } from "../../components/common/Button";
+import { InfoRibbon } from "../../components/common/InfoRibbon";
 import { MetricCard } from "../../components/common/MetricCard";
 import { useParcels } from "../../hooks/useParcels";
 import { formatCurrencyInCrore, formatPercentage } from "../../utils/formatters";
@@ -18,6 +19,17 @@ export function ParcelList() {
 
   return (
     <div className="space-y-7">
+      <InfoRibbon
+        title="Parcel ribbon"
+        description="Registry health, verified count, and valuation details are exposed inline so the section stays airy."
+        items={[
+          { label: "Parcels", value: String(stats.totalParcels) },
+          { label: "Verified", value: String(stats.verifiedParcels) },
+          { label: "Area", value: `${stats.totalAreaHectare.toFixed(2)} ha` },
+          { label: "Objections", value: String(stats.objectionCount) },
+        ]}
+      />
+
       <section className="grid gap-4 xl:grid-cols-[1fr_0.9fr]">
         <AppCard title="Parcels" description="A quiet registry view. Open a parcel when you need more detail.">
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">

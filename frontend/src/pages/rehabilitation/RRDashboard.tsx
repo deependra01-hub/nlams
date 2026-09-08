@@ -2,6 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { AppCard } from "../../components/common/AppCard";
 import { Badge } from "../../components/common/Badge";
 import { Button } from "../../components/common/Button";
+import { InfoRibbon } from "../../components/common/InfoRibbon";
 import { MetricCard } from "../../components/common/MetricCard";
 import { useRehabilitation } from "../../hooks/useRehabilitation";
 import { rehabilitationService } from "../../services/rehabilitation.service";
@@ -18,6 +19,17 @@ export function RRDashboard() {
 
   return (
     <div className="space-y-7">
+      <InfoRibbon
+        title="R&R ribbon"
+        description="Family progress, completions, and support benefits stay in a slim ribbon instead of a stacked status box."
+        items={[
+          { label: "Families", value: String(summary.totalFamilies) },
+          { label: "Completed", value: String(summary.completedFamilies) },
+          { label: "In progress", value: String(summary.inProgressFamilies) },
+          { label: "Benefits", value: formatCurrencyInCrore(summary.totalBenefitLakh / 100) },
+        ]}
+      />
+
       <section className="grid gap-4 xl:grid-cols-[1fr_0.9fr]">
         <AppCard title="R&R" description="A lighter view for family rehabilitation and resettlement.">
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">

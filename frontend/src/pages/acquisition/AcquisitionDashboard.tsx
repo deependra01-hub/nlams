@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { AppCard } from "../../components/common/AppCard";
 import { Badge } from "../../components/common/Badge";
 import { Button } from "../../components/common/Button";
+import { InfoRibbon } from "../../components/common/InfoRibbon";
 import { MetricCard } from "../../components/common/MetricCard";
 import { useAcquisition } from "../../hooks/useAcquisition";
 import { acquisitionService } from "../../services/acquisition.service";
@@ -19,6 +20,17 @@ export function AcquisitionDashboard() {
 
   return (
     <div className="space-y-7">
+      <InfoRibbon
+        title="Acquisition ribbon"
+        description="Case counts, active work, and pending handoffs are kept in a compact ribbon so the section stays easy to scan."
+        items={[
+          { label: "Cases", value: String(summary.totalCases) },
+          { label: "Active", value: String(summary.activeCases) },
+          { label: "Blocked", value: String(summary.blockedCases) },
+          { label: "Completed", value: String(summary.completedCases) },
+        ]}
+      />
+
       <section className="grid gap-4 xl:grid-cols-[1.15fr_0.85fr]">
         <AppCard title="Acquisition" description="A quiet launchpad for case review. Open a case only when needed.">
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">

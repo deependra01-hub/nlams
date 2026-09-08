@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { AppCard } from "../../components/common/AppCard";
 import { Badge } from "../../components/common/Badge";
 import { Button } from "../../components/common/Button";
+import { InfoRibbon } from "../../components/common/InfoRibbon";
 import { MetricCard } from "../../components/common/MetricCard";
 import { useProjects } from "../../hooks/useProjects";
 import { projectService } from "../../services/project.service";
@@ -19,6 +20,17 @@ export function ProjectList() {
 
   return (
     <div className="space-y-7">
+      <InfoRibbon
+        title="Project ribbon"
+        description="The current portfolio stats stay in a slim ribbon rather than a separate focus panel."
+        items={[
+          { label: "Projects", value: String(stats.totalProjects) },
+          { label: "Budget", value: formatCurrencyInCrore(stats.totalBudgetCrore) },
+          { label: "Avg progress", value: formatPercentage(stats.averageProgress) },
+          { label: "High risk", value: String(stats.highRiskProjects) },
+        ]}
+      />
+
       <section className="grid gap-4 xl:grid-cols-[1.05fr_0.95fr]">
         <AppCard title="Projects" description="A quiet portfolio view. Open a card for more detail.">
           <div className="grid gap-3 sm:grid-cols-3">

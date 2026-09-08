@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { AppCard } from "../../components/common/AppCard";
 import { Badge } from "../../components/common/Badge";
 import { Button } from "../../components/common/Button";
+import { InfoRibbon } from "../../components/common/InfoRibbon";
 import { MetricCard } from "../../components/common/MetricCard";
 import { LayerSwitcher } from "../../components/gis/LayerSwitcher";
 import { MapControls } from "../../components/gis/MapControls";
@@ -88,6 +89,17 @@ export function GISExplorer() {
 
   return (
     <div className="space-y-6">
+      <InfoRibbon
+        title="GIS ribbon"
+        description="Feature counts, risk, and coverage stay in a slim ribbon so the live map remains the focus."
+        items={[
+          { label: "Features", value: String(stats.total) },
+          { label: "High risk", value: String(stats.highRisk) },
+          { label: "Progress", value: formatPercentage(stats.averageProgress) },
+          { label: "Coverage", value: `${stats.projectCount}/${stats.parcelCount}` },
+        ]}
+      />
+
       <section className="grid gap-4 xl:grid-cols-[1fr_0.9fr]">
         <AppCard title="GIS Explorer" description="Visible map first, detail second. Keep the spatial layer calm and click-through only.">
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">

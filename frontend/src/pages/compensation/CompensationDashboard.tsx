@@ -2,6 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { AppCard } from "../../components/common/AppCard";
 import { Badge } from "../../components/common/Badge";
 import { Button } from "../../components/common/Button";
+import { InfoRibbon } from "../../components/common/InfoRibbon";
 import { MetricCard } from "../../components/common/MetricCard";
 import { useCompensation } from "../../hooks/useCompensation";
 import { compensationService } from "../../services/compensation.service";
@@ -20,6 +21,17 @@ export function CompensationDashboard() {
 
   return (
     <div className="space-y-7">
+      <InfoRibbon
+        title="Compensation ribbon"
+        description="Cases, approvals, disbursements, and the current payout envelope are shown as a quiet inline ribbon."
+        items={[
+          { label: "Cases", value: String(summary.totalCases) },
+          { label: "Approved", value: String(summary.approvedCases) },
+          { label: "Disbursed", value: String(summary.disbursedCases) },
+          { label: "Payout", value: formatCurrencyInCrore(summary.totalPayoutLakh / 100) },
+        ]}
+      />
+
       <section className="grid gap-4 xl:grid-cols-[1.15fr_0.85fr]">
         <AppCard title="Compensation" description="A light review surface for awards and payouts.">
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">

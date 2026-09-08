@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { AppCard } from "../../components/common/AppCard";
 import { Badge } from "../../components/common/Badge";
 import { Button } from "../../components/common/Button";
+import { InfoRibbon } from "../../components/common/InfoRibbon";
 import { MetricCard } from "../../components/common/MetricCard";
 import { notificationService } from "../../services/notification.service";
 import { BellRing, Settings2 } from "lucide-react";
@@ -15,6 +16,17 @@ export function Notifications() {
 
   return (
     <div className="space-y-7">
+      <InfoRibbon
+        title="Notifications ribbon"
+        description="Unread counts, inbox size, and delivery settings stay visible as a ribbon instead of a dialog."
+        items={[
+          { label: "Unread", value: String(unreadCount) },
+          { label: "Inbox", value: String(notifications.length) },
+          { label: "Preferences", value: String(preferences.length) },
+          { label: "Mode", value: "Minimal" },
+        ]}
+      />
+
       <section className="grid gap-4 xl:grid-cols-[1fr_0.9fr]">
         <AppCard title="Notifications" description="A light inbox for updates, reminders, and alerts.">
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">

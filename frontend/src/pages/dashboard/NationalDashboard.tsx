@@ -17,6 +17,7 @@ import {
 import { AppCard } from "../../components/common/AppCard";
 import { Badge } from "../../components/common/Badge";
 import { Button } from "../../components/common/Button";
+import { InfoRibbon } from "../../components/common/InfoRibbon";
 import { MetricCard } from "../../components/common/MetricCard";
 import { PRIMARY_NAV_ITEMS } from "../../app/config/navigation";
 import { useAuth } from "../../context/AuthContext";
@@ -93,6 +94,18 @@ export function NationalDashboard() {
 
   return (
     <div className="space-y-7">
+      <InfoRibbon
+        title="National command shell"
+        description="Active cases, live portfolio health, and the current spatial pulse stay visible in a slim ribbon instead of a popover."
+        items={[
+          { label: "Projects", value: String(projectStats.totalProjects) },
+          { label: "Parcels", value: String(parcelStats.totalParcels) },
+          { label: "Compensation", value: String(compensationSummary.totalCases) },
+          { label: "R&R", value: String(rrSummary.totalFamilies) },
+          { label: "Risks", value: String(aiService.getSummary().criticalRisks) },
+        ]}
+      />
+
       <section className="grid gap-4 xl:grid-cols-[1.2fr_0.8fr]">
         <div className="rounded-[32px] border border-white/80 bg-[linear-gradient(135deg,rgba(255,255,255,0.98)_0%,rgba(244,248,255,0.96)_56%,rgba(234,239,255,0.96)_100%)] p-8 shadow-[0_24px_70px_rgba(80,96,170,0.10)]">
           <div className="flex flex-wrap items-center gap-2">
