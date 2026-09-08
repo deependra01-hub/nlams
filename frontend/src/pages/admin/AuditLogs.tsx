@@ -1,13 +1,8 @@
-import { useState } from "react";
 import { AppCard } from "../../components/common/AppCard";
-import { Button } from "../../components/common/Button";
-import { HeadsUpDialog } from "../../components/common/HeadsUpDialog";
 import { adminService } from "../../services/admin.service";
 
 export function AuditLogs() {
   const logs = adminService.getAuditLogs();
-  const [activeLogId, setActiveLogId] = useState<string | null>(null);
-  const activeLog = activeLogId ? logs.find((log) => log.id === activeLogId) ?? null : null;
 
   return (
     <div className="space-y-7">
@@ -34,29 +29,9 @@ export function AuditLogs() {
               </div>
               <span className="text-xs uppercase tracking-[0.16em] text-slate-500">{log.timestamp}</span>
             </div>
-            <div className="mt-5 flex justify-end">
-              <Button variant="secondary" onClick={() => setActiveLogId(log.id)}>
-                Heads up
-              </Button>
-            </div>
           </article>
         ))}
       </section>
-
-      <HeadsUpDialog
-        open={Boolean(activeLog)}
-        title={activeLog?.action ?? ""}
-        description={activeLog?.resource ?? ""}
-        onClose={() => setActiveLogId(null)}
-      >
-        {activeLog ? (
-          <div className="grid gap-3 sm:grid-cols-3">
-            <MiniLine label="Actor" value={activeLog.actor} />
-            <MiniLine label="Resource" value={activeLog.resource} />
-            <MiniLine label="Time" value={activeLog.timestamp} />
-          </div>
-        ) : null}
-      </HeadsUpDialog>
     </div>
   );
 }

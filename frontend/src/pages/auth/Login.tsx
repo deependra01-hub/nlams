@@ -32,13 +32,12 @@ export function Login() {
             <p className="text-xs font-semibold uppercase tracking-[0.24em] text-sky-200">NLAMS Access</p>
             <h1 className="mt-4 text-3xl font-semibold tracking-tight">Sign in to the operations shell</h1>
             <p className="mt-4 max-w-xl text-sm leading-6 text-sky-50/90">
-              This phase uses demo accounts so the team can review the navigation, guard flow, and
-              layout without setting up external identity providers yet.
+              Sign in with a role to review the navigation, guard flow, and layout without setting up external identity providers yet.
             </p>
 
             <div className="mt-8 grid gap-3">
               <FeatureRow title="Role-aware entry" description="Only authorized roles can access the guarded shell." />
-              <FeatureRow title="Demo persistence" description="The chosen user is stored locally for repeatable walkthroughs." />
+              <FeatureRow title="Local session" description="The chosen user is stored locally for repeatable walkthroughs." />
               <FeatureRow title="Fast review loop" description="Login, route guards, and unauthorized states are all in one place." />
             </div>
           </section>
@@ -49,7 +48,7 @@ export function Login() {
                 <ShieldCheck className="h-6 w-6" />
               </div>
               <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Demo access</p>
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Role access</p>
                 <h2 className="text-2xl font-semibold text-slate-900">Choose a role</h2>
               </div>
             </div>
@@ -75,7 +74,7 @@ export function Login() {
             </div>
 
             <p className="mt-6 text-xs leading-5 text-slate-500">
-              If you refresh after signing in, the selected demo account stays active through local storage.
+              If you refresh after signing in, the selected account stays active through local storage.
             </p>
           </section>
         </div>

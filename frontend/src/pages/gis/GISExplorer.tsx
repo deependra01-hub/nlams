@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { AppCard } from "../../components/common/AppCard";
 import { Badge } from "../../components/common/Badge";
 import { Button } from "../../components/common/Button";
-import { HeadsUpDialog } from "../../components/common/HeadsUpDialog";
 import { MetricCard } from "../../components/common/MetricCard";
 import { LayerSwitcher } from "../../components/gis/LayerSwitcher";
 import { MapControls } from "../../components/gis/MapControls";
@@ -26,7 +25,6 @@ export function GISExplorer() {
   const features = gisService.getFeatures();
   const layers = gisService.getLayers();
   const stats = gisService.getStats();
-  const [activeFeatureId, setActiveFeatureId] = useState<string | null>(null);
   const [mapCenter, setMapCenter] = useState(gisService.getMapCenter());
   const [activeLayers, setActiveLayers] = useState<Record<GisLayerId, boolean>>(DEFAULT_LAYERS);
 
@@ -34,7 +32,6 @@ export function GISExplorer() {
     () => features.filter((feature) => activeLayers[feature.layer]),
     [activeLayers, features],
   );
-  const activeFeature = activeFeatureId ? gisService.getFeatureById(activeFeatureId) : null;
   const highRiskFeature = useMemo(
     () => [...visibleFeatures].sort((left, right) => right.risk - left.risk)[0] ?? null,
     [visibleFeatures],
@@ -57,7 +54,6 @@ export function GISExplorer() {
   };
 
   const focusFeature = (feature: GisFeature) => {
-    setActiveFeatureId(feature.id);
     setMapCenter({ lat: feature.lat, lng: feature.lng });
   };
 
@@ -71,7 +67,6 @@ export function GISExplorer() {
   };
 
   const resetView = () => {
-    setActiveFeatureId(null);
     setMapCenter(gisService.getMapCenter());
     setActiveLayers({ ...DEFAULT_LAYERS });
   };
@@ -154,9 +149,6 @@ export function GISExplorer() {
                     <Badge tone="neutral">{feature.status}</Badge>
                   </div>
                   <div className="mt-4 flex flex-wrap gap-2">
-                    <Button variant="secondary" onClick={() => focusFeature(feature)}>
-                      Heads up
-                    </Button>
                     <Button onClick={() => openLinkedPage(feature)}>Open</Button>
                   </div>
                 </div>
@@ -165,31 +157,6 @@ export function GISExplorer() {
           </AppCard>
         </div>
       </section>
-
-      <HeadsUpDialog
-        open={Boolean(activeFeature)}
-        title={activeFeature?.label ?? ""}
-        description={activeFeature?.description ?? ""}
-        onClose={() => setActiveFeatureId(null)}
-        primaryAction={activeFeature ? <Button onClick={() => openLinkedPage(activeFeature)}>Open linked page</Button> : null}
-      >
-        {activeFeature ? (
-          <div className="grid gap-3 sm:grid-cols-3">
-            <MiniLine label="Coordinates" value={`${activeFeature.lat.toFixed(3)}, ${activeFeature.lng.toFixed(3)}`} />
-            <MiniLine label="Progress" value={formatPercentage(activeFeature.progress)} />
-            <MiniLine label="Risk" value={`${activeFeature.risk}/100`} />
-          </div>
-        ) : null}
-      </HeadsUpDialog>
-    </div>
-  );
-}
-
-function MiniLine({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="rounded-2xl border border-sky-100 bg-white/90 px-4 py-4">
-      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-700">{label}</p>
-      <p className="mt-2 text-sm font-semibold text-blue-950">{value}</p>
     </div>
   );
 }

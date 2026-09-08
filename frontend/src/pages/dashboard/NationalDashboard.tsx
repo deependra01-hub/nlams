@@ -1,4 +1,4 @@
-import { useMemo, useState, type ComponentType } from "react";
+import { useMemo, type ComponentType } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   CalendarRange,
@@ -10,7 +10,6 @@ import {
   Radar,
   Rocket,
   ShieldCheck,
-  Sparkles,
   SquareKanban,
   TrendingUp,
   Wallet,
@@ -18,7 +17,6 @@ import {
 import { AppCard } from "../../components/common/AppCard";
 import { Badge } from "../../components/common/Badge";
 import { Button } from "../../components/common/Button";
-import { HeadsUpDialog } from "../../components/common/HeadsUpDialog";
 import { MetricCard } from "../../components/common/MetricCard";
 import { PRIMARY_NAV_ITEMS } from "../../app/config/navigation";
 import { useAuth } from "../../context/AuthContext";
@@ -30,41 +28,6 @@ import { aiService } from "../../services/ai.service";
 import { notificationService } from "../../services/notification.service";
 import { reportService } from "../../services/report.service";
 import { simulatorService } from "../../services/simulator.service";
-
-const FEATURE_SUMMARY = [
-  {
-    title: "Acquisition",
-    description: "Survey, hearings, objections, award, and possession move in one clean flow.",
-    icon: SquareKanban,
-    path: "/acquisition",
-    facts: ["4 active cases", "1 blocked", "Fast drill-in"],
-    tone: "violet" as const,
-  },
-  {
-    title: "GIS Explorer",
-    description: "Spatial layers stay available, but the first view is a light gateway.",
-    icon: Landmark,
-    path: "/gis",
-    facts: ["Layered map", "Feature preview", "Spatial crosswalk"],
-    tone: "cyan" as const,
-  },
-  {
-    title: "Documents",
-    description: "Versioned evidence with linked records, not a wall of file metadata.",
-    icon: FileText,
-    path: "/documents",
-    facts: ["4 key records", "Version history", "Verified trace"],
-    tone: "emerald" as const,
-  },
-  {
-    title: "AI Intelligence",
-    description: "Risk prompts and recommendations stay concise and action-first.",
-    icon: Radar,
-    path: "/ai",
-    facts: ["Critical flag", "Confidence score", "Next action"],
-    tone: "rose" as const,
-  },
-];
 
 const PROJECT_ROWS = [
   { name: "Guwahati Smart City", location: "Guwahati, Assam", plots: "320", area: "2,450 ac", status: "Active", tone: "success" as const },
@@ -87,8 +50,6 @@ export function NationalDashboard() {
   const { stats: parcelStats } = useParcels();
   const { summary: compensationSummary } = useCompensation();
   const { summary: rrSummary } = useRehabilitation();
-  const [activeFeature, setActiveFeature] = useState<(typeof FEATURE_SUMMARY)[number] | null>(null);
-
   const quickStats = useMemo(
     () => [
       {
@@ -148,9 +109,6 @@ export function NationalDashboard() {
           <div className="mt-6 flex flex-wrap gap-3">
             <Button leadingIcon={Rocket} onClick={() => navigate("/projects")}>
               Open modules
-            </Button>
-            <Button variant="secondary" leadingIcon={Sparkles} onClick={() => setActiveFeature(FEATURE_SUMMARY[0] ?? null)}>
-              Heads up
             </Button>
             <Button variant="secondary" leadingIcon={CalendarRange} onClick={() => navigate("/reports")}>
               Last 30 days
@@ -215,22 +173,6 @@ export function NationalDashboard() {
             </Button>
           </div>
         </AppCard>
-      </section>
-
-      <section className="grid gap-4 xl:grid-cols-2">
-        {[
-          { title: "Workspace is healthy", description: "All systems are running cleanly.", tone: "text-violet-700" },
-          { title: "Profile check pending", description: "Small tasks remain before full personalization.", tone: "text-emerald-700" },
-        ].map((item) => (
-          <div
-            key={item.title}
-            className="rounded-[26px] border border-white/80 bg-white/90 px-5 py-5 shadow-[0_14px_40px_rgba(15,29,47,0.06)]"
-          >
-            <p className={`text-xs font-semibold uppercase tracking-[0.22em] ${item.tone}`}>Heads up</p>
-            <p className="mt-2 text-lg font-semibold text-blue-950">{item.title}</p>
-            <p className="mt-1 text-sm leading-6 text-blue-700/75">{item.description}</p>
-          </div>
-        ))}
       </section>
 
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
@@ -403,24 +345,6 @@ export function NationalDashboard() {
         </AppCard>
       </section>
 
-      <HeadsUpDialog
-        open={Boolean(activeFeature)}
-        title={activeFeature?.title ?? ""}
-        description={activeFeature?.description ?? ""}
-        onClose={() => setActiveFeature(null)}
-        primaryAction={activeFeature ? <Button onClick={() => navigate(activeFeature.path)}>Open module</Button> : null}
-      >
-        {activeFeature ? (
-          <div className="grid gap-3 sm:grid-cols-3">
-            {activeFeature.facts.map((fact) => (
-              <div key={fact} className="rounded-2xl border border-sky-100 bg-white/90 px-4 py-4">
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-700">Heads up</p>
-                <p className="mt-2 text-sm font-semibold text-blue-950">{fact}</p>
-              </div>
-            ))}
-          </div>
-        ) : null}
-      </HeadsUpDialog>
     </div>
   );
 }

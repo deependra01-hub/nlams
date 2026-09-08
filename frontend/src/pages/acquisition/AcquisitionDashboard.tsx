@@ -1,9 +1,7 @@
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AppCard } from "../../components/common/AppCard";
 import { Badge } from "../../components/common/Badge";
 import { Button } from "../../components/common/Button";
-import { HeadsUpDialog } from "../../components/common/HeadsUpDialog";
 import { MetricCard } from "../../components/common/MetricCard";
 import { useAcquisition } from "../../hooks/useAcquisition";
 import { acquisitionService } from "../../services/acquisition.service";
@@ -12,8 +10,6 @@ import { AlertTriangle, CheckCircle2, FileText, MapPinned } from "lucide-react";
 export function AcquisitionDashboard() {
   const navigate = useNavigate();
   const { cases, summary, setActiveCaseId } = useAcquisition();
-  const [activeCaseId, setActiveCaseIdLocal] = useState<string | null>(null);
-  const activeCase = activeCaseId ? acquisitionService.getCaseById(activeCaseId) : null;
   const launchCases = cases.slice(0, 4);
 
   const openCase = (caseId: string) => {
@@ -37,7 +33,7 @@ export function AcquisitionDashboard() {
           <div className="grid gap-3">
             <MiniLine label="Pending hearings" value={String(summary.pendingHearings)} />
             <MiniLine label="Pending possessions" value={String(summary.pendingPossessions)} />
-            <MiniLine label="Case focus" value="Heads up cards only" />
+            <MiniLine label="Case focus" value="Open cards only" />
           </div>
         </AppCard>
       </section>
@@ -65,32 +61,11 @@ export function AcquisitionDashboard() {
             </div>
             <div className="mt-5 flex flex-wrap justify-between gap-3">
               <p className="text-sm text-slate-500">Updated {entry.lastUpdated}</p>
-              <div className="flex flex-wrap gap-2">
-                <Button variant="secondary" onClick={() => setActiveCaseIdLocal(entry.id)}>
-                  Heads up
-                </Button>
-                <Button onClick={() => openCase(entry.id)}>Open</Button>
-              </div>
+              <Button onClick={() => openCase(entry.id)}>Open</Button>
             </div>
           </article>
         ))}
       </section>
-
-      <HeadsUpDialog
-        open={Boolean(activeCase)}
-        title={activeCase?.title ?? ""}
-        description={activeCase?.summary ?? ""}
-        onClose={() => setActiveCaseIdLocal(null)}
-        primaryAction={activeCase ? <Button onClick={() => openCase(activeCase.id)}>Open case</Button> : null}
-      >
-        {activeCase ? (
-          <div className="grid gap-3 sm:grid-cols-3">
-            <MiniLine label="Project" value={activeCase.projectId} />
-            <MiniLine label="Parcel" value={activeCase.parcelId} />
-            <MiniLine label="Stage" value={activeCase.stage} />
-          </div>
-        ) : null}
-      </HeadsUpDialog>
     </div>
   );
 }

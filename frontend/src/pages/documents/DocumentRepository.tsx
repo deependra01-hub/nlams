@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { AppCard } from "../../components/common/AppCard";
 import { Badge } from "../../components/common/Badge";
 import { Button } from "../../components/common/Button";
-import { HeadsUpDialog } from "../../components/common/HeadsUpDialog";
 import { MetricCard } from "../../components/common/MetricCard";
 import { useDocuments } from "../../hooks/useDocuments";
 import { documentService } from "../../services/document.service";
@@ -15,7 +14,6 @@ export function DocumentRepository() {
   const { documents, stats, setActiveDocumentId } = useDocuments();
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState<DocumentStatus | "all">("all");
-  const [activeDocumentId, setActiveDocumentIdLocal] = useState<string | null>(null);
 
   const filteredDocuments = useMemo(
     () =>
@@ -39,7 +37,6 @@ export function DocumentRepository() {
       }),
     [documents, query, status],
   );
-  const activeDocument = activeDocumentId ? documentService.getDocumentById(activeDocumentId) : null;
   const launchDocuments = filteredDocuments.slice(0, 4);
 
   const openDocument = (documentId: string) => {
@@ -121,32 +118,11 @@ export function DocumentRepository() {
             </div>
             <div className="mt-5 flex flex-wrap justify-between gap-3">
               <p className="text-sm text-slate-500">{document.uploadedAt}</p>
-              <div className="flex flex-wrap gap-2">
-                <Button variant="secondary" onClick={() => setActiveDocumentIdLocal(document.id)}>
-                  Heads up
-                </Button>
-                <Button onClick={() => openDocument(document.id)}>Open</Button>
-              </div>
+              <Button onClick={() => openDocument(document.id)}>Open</Button>
             </div>
           </article>
         ))}
       </section>
-
-      <HeadsUpDialog
-        open={Boolean(activeDocument)}
-        title={activeDocument?.title ?? ""}
-        description={activeDocument?.summary ?? ""}
-        onClose={() => setActiveDocumentIdLocal(null)}
-        primaryAction={activeDocument ? <Button onClick={() => openDocument(activeDocument.id)}>Open document</Button> : null}
-      >
-        {activeDocument ? (
-          <div className="grid gap-3 sm:grid-cols-3">
-            <MiniLine label="Reference" value={activeDocument.referenceNo} />
-            <MiniLine label="File" value={activeDocument.fileName} />
-            <MiniLine label="Review" value={activeDocument.verification.status} />
-          </div>
-        ) : null}
-      </HeadsUpDialog>
     </div>
   );
 }

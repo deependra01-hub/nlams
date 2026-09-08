@@ -2,8 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import { Bell, ChevronDown, HelpCircle, Menu, Plus, Sparkles, UserCircle2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useUiStore } from "../../store/ui.store";
 import { useFilterStore } from "../../store/filter.store";
+import { useUiStore } from "../../store/ui.store";
 import { useNotificationStore } from "../../store/notification.store";
 import { IconButton } from "../common/IconButton";
 import { Header } from "./Header";
@@ -13,20 +13,15 @@ import { GEO_FILTER_OPTIONS, getRoleLabel } from "../../app/config/navigation";
 import { Button } from "../common/Button";
 import { SearchBar } from "../common/SearchBar";
 import { Select } from "../common/Select";
-import { Badge } from "../common/Badge";
 import { MobileNavigation } from "./MobileNavigation";
 import { HeadsUpDialog } from "../common/HeadsUpDialog";
 import { useAuth } from "../../context/AuthContext";
+import { notificationService } from "../../services/notification.service";
 
 export function MainLayout() {
   const location = useLocation();
   const { user, hasSeenSessionHeadsUp, markSessionHeadsUpSeen } = useAuth();
-  const {
-    sidebarCollapsed,
-    setSidebarCollapsed,
-    mobileNavOpen,
-    setMobileNavOpen,
-  } = useUiStore();
+  const { mobileNavOpen, setMobileNavOpen } = useUiStore();
   const { searchText, setSearchText, geographicScope, setGeographicScope } = useFilterStore();
   const { unreadCount } = useNotificationStore();
   const navigate = useNavigate();
@@ -57,20 +52,13 @@ export function MainLayout() {
       <MobileNavigation open={mobileNavOpen} onClose={() => setMobileNavOpen(false)}>
         <Sidebar
           mobile
-          collapsed={false}
-          onToggleCollapse={() => {
-            setSidebarCollapsed(!sidebarCollapsed);
-          }}
           onCloseMobile={() => setMobileNavOpen(false)}
         />
       </MobileNavigation>
 
       <div className="mx-auto flex min-h-screen w-full max-w-[1520px] gap-6 px-3 py-3 md:px-5 lg:px-6">
         <div className="sticky top-3 hidden h-[calc(100vh-1.5rem)] lg:block">
-          <Sidebar
-            collapsed={sidebarCollapsed}
-            onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
-          />
+          <Sidebar />
         </div>
 
         <div className="min-w-0 flex-1 space-y-5">
@@ -150,13 +138,8 @@ export function MainLayout() {
             breadcrumbs={routeHeader.breadcrumbs}
             actions={
               <>
-                <Badge tone="primary">Demo mode</Badge>
-                <Button
-                  variant="secondary"
-                  onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-                  className="border-violet-200 bg-white text-violet-800"
-                >
-                  {sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+                <Button variant="secondary" onClick={() => navigate("/notifications")} className="border-violet-200 bg-white text-violet-800">
+                  Notifications
                 </Button>
               </>
             }
@@ -170,15 +153,29 @@ export function MainLayout() {
 
       <HeadsUpDialog
         open={sessionHeadsUpOpen}
-        title="Welcome back"
-        description="The shell stays minimal by design. Use the sidebar and the light dashboard cards to open detailed modules only when you need them."
+        title="Notifications and alerts"
+        description="A quick session heads-up for unread notifications and active alerts."
         onClose={closeSessionHeadsUp}
         primaryAction={<Button onClick={closeSessionHeadsUp}>Got it</Button>}
       >
         <div className="grid gap-3 sm:grid-cols-3">
-          <ProfileStat label="Dashboards" value="One clean entry" />
-          <ProfileStat label="GIS" value="Map is visible" />
-          <ProfileStat label="Heads up" value="Shown once per login" />
+          <ProfileStat label="Unread" value={String(notificationService.getUnreadCount())} />
+          <ProfileStat label="Alerts" value={notificationService.getNotifications().filter((item) => item.kind === "alert").length.toString()} />
+          <ProfileStat label="Updates" value={notificationService.getNotifications().filter((item) => item.kind !== "alert").length.toString()} />
+        </div>
+        <div className="mt-5 grid gap-3">
+          {notificationService.getNotifications().slice(0, 3).map((item) => (
+            <div key={item.id} className="rounded-2xl border border-sky-100 bg-white/90 px-4 py-4">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-700">{item.kind}</p>
+                  <p className="mt-2 text-sm font-semibold text-blue-950">{item.title}</p>
+                  <p className="mt-1 text-sm leading-6 text-blue-700/75">{item.message}</p>
+                </div>
+                <span className="text-xs uppercase tracking-[0.16em] text-slate-500">{item.createdAt}</span>
+              </div>
+            </div>
+          ))}
         </div>
       </HeadsUpDialog>
     </div>
@@ -188,7 +185,6 @@ export function MainLayout() {
 function ProfileMenu() {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
-  const [profileOpen, setProfileOpen] = useState(false);
 
   const handleSignOut = () => {
     logout();
@@ -210,24 +206,10 @@ function ProfileMenu() {
           <p className="text-xs text-slate-500">{getRoleLabel(user?.role)}</p>
         </div>
         <div className="mt-3 space-y-1 text-sm">
-          <MenuButton label="View profile" onClick={() => setProfileOpen(true)} />
           <MenuButton label="Session preferences" onClick={() => navigate("/notifications")} />
           <MenuButton label="Sign out" tone="danger" onClick={handleSignOut} />
         </div>
       </div>
-      <HeadsUpDialog
-        open={profileOpen}
-        title={user?.name ?? "Profile"}
-        description="Session summary and account shortcuts."
-        onClose={() => setProfileOpen(false)}
-        primaryAction={<Button onClick={() => navigate("/dashboard")}>Go to dashboard</Button>}
-      >
-        <div className="grid gap-3 sm:grid-cols-3">
-          <ProfileStat label="Role" value={user?.role ?? "Unknown"} />
-          <ProfileStat label="Permissions" value={String(user?.permissions.length ?? 0)} />
-          <ProfileStat label="Session" value={user ? "Active" : "Signed out"} />
-        </div>
-      </HeadsUpDialog>
     </details>
   );
 }

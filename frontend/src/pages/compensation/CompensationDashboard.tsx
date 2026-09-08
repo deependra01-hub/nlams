@@ -1,9 +1,7 @@
-import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { AppCard } from "../../components/common/AppCard";
 import { Badge } from "../../components/common/Badge";
 import { Button } from "../../components/common/Button";
-import { HeadsUpDialog } from "../../components/common/HeadsUpDialog";
 import { MetricCard } from "../../components/common/MetricCard";
 import { useCompensation } from "../../hooks/useCompensation";
 import { compensationService } from "../../services/compensation.service";
@@ -13,9 +11,6 @@ import { DollarSign, FileText, ShieldAlert, Wallet } from "lucide-react";
 export function CompensationDashboard() {
   const navigate = useNavigate();
   const { cases, summary, setActiveCaseId } = useCompensation();
-  const [activeCaseId, setActiveCaseIdLocal] = useState<string | null>(null);
-
-  const activeCase = activeCaseId ? compensationService.getCaseById(activeCaseId) : null;
   const payments = compensationService.getPayments();
 
   const openCase = (caseId: string) => {
@@ -65,12 +60,7 @@ export function CompensationDashboard() {
             </div>
             <div className="mt-5 flex flex-wrap justify-between gap-3">
               <p className="text-sm text-slate-500">Updated {item.lastUpdated}</p>
-              <div className="flex flex-wrap gap-2">
-                <Button variant="secondary" onClick={() => setActiveCaseIdLocal(item.id)}>
-                  Heads up
-                </Button>
-                <Button onClick={() => openCase(item.id)}>Open</Button>
-              </div>
+              <Button onClick={() => openCase(item.id)}>Open</Button>
             </div>
           </article>
         ))}
@@ -114,21 +104,6 @@ export function CompensationDashboard() {
         </AppCard>
       </section>
 
-      <HeadsUpDialog
-        open={Boolean(activeCase)}
-        title={activeCase?.ownerName ?? ""}
-        description={activeCase?.auditFlag ?? ""}
-        onClose={() => setActiveCaseIdLocal(null)}
-        primaryAction={activeCase ? <Button onClick={() => openCase(activeCase.id)}>Open case</Button> : null}
-      >
-        {activeCase ? (
-          <div className="grid gap-3 sm:grid-cols-3">
-            <MiniLine label="Total" value={formatCurrencyInCrore(activeCase.totalAmountLakh / 100)} />
-            <MiniLine label="Mode" value={activeCase.paymentMode.replaceAll("_", " ")} />
-            <MiniLine label="Review" value={activeCase.reviewOwner} />
-          </div>
-        ) : null}
-      </HeadsUpDialog>
     </div>
   );
 }

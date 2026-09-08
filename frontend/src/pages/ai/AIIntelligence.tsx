@@ -1,9 +1,7 @@
-import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AppCard } from "../../components/common/AppCard";
 import { Badge } from "../../components/common/Badge";
 import { Button } from "../../components/common/Button";
-import { HeadsUpDialog } from "../../components/common/HeadsUpDialog";
 import { MetricCard } from "../../components/common/MetricCard";
 import { aiService } from "../../services/ai.service";
 import type { AIInsight } from "../../types/ai.types";
@@ -13,11 +11,6 @@ export function AIIntelligence() {
   const navigate = useNavigate();
   const insights = aiService.getInsights();
   const summary = aiService.getSummary();
-  const [activeId, setActiveId] = useState<string | null>(null);
-  const activeInsight = useMemo(
-    () => (activeId ? insights.find((insight) => insight.id === activeId) ?? null : null),
-    [activeId, insights],
-  );
 
   return (
     <div className="space-y-7">
@@ -35,7 +28,7 @@ export function AIIntelligence() {
           <div className="grid gap-3">
             <MiniLine label="Risk queue" value={String(insights.length)} />
             <MiniLine label="Default view" value={insights[0]?.entityName ?? "None"} />
-            <MiniLine label="Mode" value="Heads up launchpad" />
+            <MiniLine label="Mode" value="Open details only" />
           </div>
         </AppCard>
       </section>
@@ -60,32 +53,11 @@ export function AIIntelligence() {
             </div>
             <div className="mt-5 flex flex-wrap justify-between gap-3">
               <p className="text-sm text-slate-500">{insight.updatedAt}</p>
-              <div className="flex flex-wrap gap-2">
-                <Button variant="secondary" onClick={() => setActiveId(insight.id)}>
-                  Heads up
-                </Button>
-                <Button onClick={() => navigate(insight.route)}>Open</Button>
-              </div>
+              <Button onClick={() => navigate(insight.route)}>Open</Button>
             </div>
           </article>
         ))}
       </section>
-
-      <HeadsUpDialog
-        open={Boolean(activeInsight)}
-        title={activeInsight?.entityName ?? ""}
-        description={activeInsight?.recommendation ?? ""}
-        onClose={() => setActiveId(null)}
-        primaryAction={activeInsight ? <Button onClick={() => navigate(activeInsight.route)}>Open</Button> : null}
-      >
-        {activeInsight ? (
-          <div className="grid gap-3 sm:grid-cols-3">
-            <MiniLine label="Owner" value={activeInsight.owner} />
-            <MiniLine label="Route" value={activeInsight.route} />
-            <MiniLine label="Drivers" value={String(activeInsight.drivers.length)} />
-          </div>
-        ) : null}
-      </HeadsUpDialog>
     </div>
   );
 }

@@ -30,7 +30,6 @@ export function LandVerification() {
       >
         <div className="flex flex-wrap items-center gap-2">
           <Badge tone="primary">Verification workflow</Badge>
-          <Badge tone="neutral">Demo phase</Badge>
         </div>
       </AppCard>
 

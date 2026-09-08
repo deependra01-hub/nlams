@@ -1,14 +1,9 @@
-import { useState } from "react";
 import { AppCard } from "../../components/common/AppCard";
 import { Badge } from "../../components/common/Badge";
-import { Button } from "../../components/common/Button";
-import { HeadsUpDialog } from "../../components/common/HeadsUpDialog";
 import { adminService } from "../../services/admin.service";
 
 export function Users() {
   const users = adminService.getUsers();
-  const [activeUserId, setActiveUserId] = useState<string | null>(null);
-  const activeUser = activeUserId ? users.find((user) => user.id === activeUserId) ?? null : null;
 
   return (
     <div className="space-y-7">
@@ -39,30 +34,10 @@ export function Users() {
             </div>
             <div className="mt-5 flex flex-wrap justify-between gap-3">
               <p className="text-sm text-slate-500">{user.lastLogin}</p>
-              <div className="flex flex-wrap gap-2">
-                <Button variant="secondary" onClick={() => setActiveUserId(user.id)}>
-                  Heads up
-                </Button>
-              </div>
             </div>
           </article>
         ))}
       </section>
-
-      <HeadsUpDialog
-        open={Boolean(activeUser)}
-        title={activeUser?.name ?? ""}
-        description={activeUser?.role ?? ""}
-        onClose={() => setActiveUserId(null)}
-      >
-        {activeUser ? (
-          <div className="grid gap-3 sm:grid-cols-3">
-            <MiniLine label="Department" value={activeUser.department} />
-            <MiniLine label="Status" value={activeUser.status} />
-            <MiniLine label="Last login" value={activeUser.lastLogin} />
-          </div>
-        ) : null}
-      </HeadsUpDialog>
     </div>
   );
 }

@@ -1,21 +1,15 @@
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AppCard } from "../../components/common/AppCard";
 import { Badge } from "../../components/common/Badge";
 import { Button } from "../../components/common/Button";
-import { HeadsUpDialog } from "../../components/common/HeadsUpDialog";
 import { MetricCard } from "../../components/common/MetricCard";
 import { useParcels } from "../../hooks/useParcels";
-import { parcelService } from "../../services/parcel.service";
 import { formatCurrencyInCrore, formatPercentage } from "../../utils/formatters";
 import { Landmark, MapPinned, ShieldAlert, Workflow } from "lucide-react";
 
 export function ParcelList() {
   const navigate = useNavigate();
   const { parcels, stats, setActiveParcelId } = useParcels();
-  const [activeParcelId, setActiveParcelIdLocal] = useState<string | null>(null);
-
-  const activeParcel = activeParcelId ? parcelService.getParcelById(activeParcelId) : null;
 
   const openParcel = (parcelId: string) => {
     setActiveParcelId(parcelId);
@@ -65,32 +59,11 @@ export function ParcelList() {
             </div>
             <div className="mt-5 flex flex-wrap justify-between gap-3">
               <p className="text-sm text-slate-500">{parcel.linkedProjectCode}</p>
-              <div className="flex flex-wrap gap-2">
-                <Button variant="secondary" onClick={() => setActiveParcelIdLocal(parcel.id)}>
-                  Heads up
-                </Button>
-                <Button onClick={() => openParcel(parcel.id)}>Open</Button>
-              </div>
+              <Button onClick={() => openParcel(parcel.id)}>Open</Button>
             </div>
           </article>
         ))}
       </section>
-
-      <HeadsUpDialog
-        open={Boolean(activeParcel)}
-        title={activeParcel?.ownerName ?? ""}
-        description={activeParcel?.remarks ?? ""}
-        onClose={() => setActiveParcelIdLocal(null)}
-        primaryAction={activeParcel ? <Button onClick={() => openParcel(activeParcel.id)}>Open parcel page</Button> : null}
-      >
-        {activeParcel ? (
-          <div className="grid gap-3 sm:grid-cols-3">
-            <MiniLine label="Valuation" value={formatCurrencyInCrore(activeParcel.valuationLakh / 100)} />
-            <MiniLine label="Mutation" value={activeParcel.mutationStatus} />
-            <MiniLine label="Status" value={activeParcel.status} />
-          </div>
-        ) : null}
-      </HeadsUpDialog>
     </div>
   );
 }

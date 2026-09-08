@@ -1,9 +1,7 @@
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AppCard } from "../../components/common/AppCard";
 import { Badge } from "../../components/common/Badge";
 import { Button } from "../../components/common/Button";
-import { HeadsUpDialog } from "../../components/common/HeadsUpDialog";
 import { MetricCard } from "../../components/common/MetricCard";
 import { useProjects } from "../../hooks/useProjects";
 import { projectService } from "../../services/project.service";
@@ -13,9 +11,6 @@ import { BarChart3, MapPinned, Users } from "lucide-react";
 export function ProjectList() {
   const navigate = useNavigate();
   const { projects, stats, setActiveProjectId } = useProjects();
-  const [activeProjectId, setActiveProjectIdLocal] = useState<string | null>(null);
-
-  const activeProject = activeProjectId ? projectService.getProjectById(activeProjectId) : null;
 
   const openProject = (projectId: string) => {
     setActiveProjectId(projectId);
@@ -65,34 +60,11 @@ export function ProjectList() {
             </div>
             <div className="mt-5 flex flex-wrap justify-between gap-3">
               <p className="text-sm text-slate-500">{project.affectedFamilies} families</p>
-              <div className="flex flex-wrap gap-2">
-                <Button variant="secondary" onClick={() => setActiveProjectIdLocal(project.id)}>
-                  Heads up
-                </Button>
-                <Button onClick={() => openProject(project.id)}>Open</Button>
-              </div>
+              <Button onClick={() => openProject(project.id)}>Open</Button>
             </div>
           </article>
         ))}
       </section>
-
-      <HeadsUpDialog
-        open={Boolean(activeProject)}
-        title={activeProject?.name ?? ""}
-        description={activeProject?.description ?? ""}
-        onClose={() => setActiveProjectIdLocal(null)}
-        primaryAction={
-          activeProject ? <Button onClick={() => openProject(activeProject.id)}>Open project page</Button> : null
-        }
-      >
-        {activeProject ? (
-          <div className="grid gap-3 sm:grid-cols-3">
-            <MiniLine label="Code" value={activeProject.code} />
-            <MiniLine label="Target" value={activeProject.targetDate} />
-            <MiniLine label="Stage" value={projectService.getStatusLabel(activeProject.status)} />
-          </div>
-        ) : null}
-      </HeadsUpDialog>
     </div>
   );
 }

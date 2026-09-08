@@ -1,9 +1,7 @@
-import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { AppCard } from "../../components/common/AppCard";
 import { Badge } from "../../components/common/Badge";
 import { Button } from "../../components/common/Button";
-import { HeadsUpDialog } from "../../components/common/HeadsUpDialog";
 import { MetricCard } from "../../components/common/MetricCard";
 import { useRehabilitation } from "../../hooks/useRehabilitation";
 import { rehabilitationService } from "../../services/rehabilitation.service";
@@ -13,10 +11,6 @@ import { Home, MapPinned, ShieldCheck, Users } from "lucide-react";
 export function RRDashboard() {
   const navigate = useNavigate();
   const { families, summary, milestones, setActiveFamilyId } = useRehabilitation();
-  const [activeFamilyId, setActiveFamilyIdLocal] = useState<string | null>(null);
-
-  const activeFamily = activeFamilyId ? rehabilitationService.getFamilyById(activeFamilyId) : null;
-
   const openFamily = (familyId: string) => {
     setActiveFamilyId(familyId);
     navigate("/rr/families");
@@ -65,12 +59,7 @@ export function RRDashboard() {
             </div>
             <div className="mt-5 flex flex-wrap justify-between gap-3">
               <p className="text-sm text-slate-500">{family.livelihoodSource}</p>
-              <div className="flex flex-wrap gap-2">
-                <Button variant="secondary" onClick={() => setActiveFamilyIdLocal(family.id)}>
-                  Heads up
-                </Button>
-                <Button onClick={() => openFamily(family.id)}>Open</Button>
-              </div>
+              <Button onClick={() => openFamily(family.id)}>Open</Button>
             </div>
           </article>
         ))}
@@ -110,22 +99,6 @@ export function RRDashboard() {
           </div>
         </AppCard>
       </section>
-
-      <HeadsUpDialog
-        open={Boolean(activeFamily)}
-        title={activeFamily?.headName ?? ""}
-        description={activeFamily?.remarks ?? ""}
-        onClose={() => setActiveFamilyIdLocal(null)}
-        primaryAction={activeFamily ? <Button onClick={() => openFamily(activeFamily.id)}>Open family page</Button> : null}
-      >
-        {activeFamily ? (
-          <div className="grid gap-3 sm:grid-cols-3">
-            <MiniLine label="Housing" value={activeFamily.housingOption} />
-            <MiniLine label="Benefit" value={formatCurrencyInCrore(activeFamily.rehabilitationBenefitLakh / 100)} />
-            <MiniLine label="Status" value={rehabilitationService.getStatusLabel(activeFamily.status)} />
-          </div>
-        ) : null}
-      </HeadsUpDialog>
     </div>
   );
 }

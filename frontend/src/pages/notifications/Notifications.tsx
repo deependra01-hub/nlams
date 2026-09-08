@@ -1,9 +1,7 @@
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AppCard } from "../../components/common/AppCard";
 import { Badge } from "../../components/common/Badge";
 import { Button } from "../../components/common/Button";
-import { HeadsUpDialog } from "../../components/common/HeadsUpDialog";
 import { MetricCard } from "../../components/common/MetricCard";
 import { notificationService } from "../../services/notification.service";
 import { BellRing, Settings2 } from "lucide-react";
@@ -13,8 +11,6 @@ export function Notifications() {
   const notifications = notificationService.getNotifications();
   const preferences = notificationService.getPreferences();
   const unreadCount = notificationService.getUnreadCount();
-  const [activeNotificationId, setActiveNotificationId] = useState<string | null>(null);
-  const activeNotification = activeNotificationId ? notifications.find((item) => item.id === activeNotificationId) ?? null : null;
   const launchNotifications = notifications.slice(0, 4);
 
   return (
@@ -33,7 +29,7 @@ export function Notifications() {
           <div className="grid gap-3">
             <MiniLine label="Unread" value={`${unreadCount}`} />
             <MiniLine label="Delivery" value="In-app and email" />
-            <MiniLine label="View" value="Heads up cards" />
+            <MiniLine label="View" value="Open cards" />
           </div>
         </AppCard>
       </section>
@@ -60,12 +56,7 @@ export function Notifications() {
             </div>
             <div className="mt-5 flex flex-wrap justify-between gap-3">
               <p className="text-sm text-slate-500">{notification.route}</p>
-              <div className="flex flex-wrap gap-2">
-                <Button variant="secondary" onClick={() => setActiveNotificationId(notification.id)}>
-                  Heads up
-                </Button>
-                <Button onClick={() => navigate(notification.route)}>Open</Button>
-              </div>
+              <Button onClick={() => navigate(notification.route)}>Open</Button>
             </div>
           </article>
         ))}
@@ -84,22 +75,6 @@ export function Notifications() {
           ))}
         </div>
       </AppCard>
-
-      <HeadsUpDialog
-        open={Boolean(activeNotification)}
-        title={activeNotification?.title ?? ""}
-        description={activeNotification?.message ?? ""}
-        onClose={() => setActiveNotificationId(null)}
-        primaryAction={activeNotification ? <Button onClick={() => navigate(activeNotification.route)}>Open</Button> : null}
-      >
-        {activeNotification ? (
-          <div className="grid gap-3 sm:grid-cols-3">
-            <MiniLine label="Audience" value={activeNotification.audience} />
-            <MiniLine label="Kind" value={notificationService.getKindLabel(activeNotification.kind)} />
-            <MiniLine label="Route" value={activeNotification.route} />
-          </div>
-        ) : null}
-      </HeadsUpDialog>
     </div>
   );
 }

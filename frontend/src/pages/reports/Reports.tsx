@@ -1,9 +1,7 @@
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AppCard } from "../../components/common/AppCard";
 import { Badge } from "../../components/common/Badge";
 import { Button } from "../../components/common/Button";
-import { HeadsUpDialog } from "../../components/common/HeadsUpDialog";
 import { MetricCard } from "../../components/common/MetricCard";
 import { reportService } from "../../services/report.service";
 import { BarChart3, FileChartColumn, FileDown, ListChecks } from "lucide-react";
@@ -12,8 +10,6 @@ export function Reports() {
   const navigate = useNavigate();
   const reports = reportService.getReports();
   const metrics = reportService.getMetrics();
-  const [activeReportId, setActiveReportId] = useState<string | null>(null);
-  const activeReport = activeReportId ? reports.find((report) => report.id === activeReportId) ?? null : null;
   const launchReports = reports.slice(0, 4);
 
   return (
@@ -64,32 +60,11 @@ export function Reports() {
             </div>
             <div className="mt-5 flex flex-wrap justify-between gap-3">
               <p className="text-sm text-slate-500">{report.updatedAt}</p>
-              <div className="flex flex-wrap gap-2">
-                <Button variant="secondary" onClick={() => setActiveReportId(report.id)}>
-                  Heads up
-                </Button>
-                <Button onClick={() => navigate("/reports/analytics")}>Open</Button>
-              </div>
+              <Button onClick={() => navigate("/reports/analytics")}>Open</Button>
             </div>
           </article>
         ))}
       </section>
-
-      <HeadsUpDialog
-        open={Boolean(activeReport)}
-        title={activeReport?.title ?? ""}
-        description={activeReport?.summary ?? ""}
-        onClose={() => setActiveReportId(null)}
-        primaryAction={activeReport ? <Button onClick={() => navigate("/reports/analytics")}>Open analytics</Button> : null}
-      >
-        {activeReport ? (
-          <div className="grid gap-3 sm:grid-cols-3">
-            <MiniLine label="Owner" value={activeReport.owner} />
-            <MiniLine label="Format" value={activeReport.format} />
-            <MiniLine label="Updated" value={activeReport.updatedAt} />
-          </div>
-        ) : null}
-      </HeadsUpDialog>
     </div>
   );
 }
