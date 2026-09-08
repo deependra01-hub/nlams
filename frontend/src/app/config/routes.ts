@@ -23,6 +23,14 @@ const ROUTE_HEADERS: Record<string, RouteHeader> = {
       { label: "Create Project" },
     ],
   },
+  "/projects/:projectId/edit": {
+    title: "Edit Project",
+    description: "Update the selected project draft.",
+    breadcrumbs: [
+      { label: "Projects", to: "/projects" },
+      { label: "Edit Project" },
+    ],
+  },
   "/parcels": {
     title: "Parcels",
     description: "Parcel registry and land record verification overview.",
@@ -191,18 +199,40 @@ const ROUTE_HEADERS: Record<string, RouteHeader> = {
 };
 
 export function getRouteHeader(pathname: string): RouteHeader {
+  const directMatch = ROUTE_HEADERS[pathname];
+
+  if (directMatch) {
+    return directMatch;
+  }
+
+  const patternMatch = Object.entries(ROUTE_HEADERS).find(([pattern]) => matchesRoutePattern(pattern, pathname));
+
+  if (patternMatch) {
+    return patternMatch[1];
+  }
+
   return (
-    ROUTE_HEADERS[pathname] ?? {
+    {
       title: humanizePath(pathname),
       description: "Navigation and layout shell for the NLAMS frontend.",
       breadcrumbs: pathname
-        .split("/")
-        .filter(Boolean)
-        .map((segment, index, parts) => ({
-          label: humanizeSegment(segment),
-          to: `/${parts.slice(0, index + 1).join("/")}`,
-        })),
+      .split("/")
+      .filter(Boolean)
+      .map((segment, index, parts) => ({
+        label: humanizeSegment(segment),
+        to: `/${parts.slice(0, index + 1).join("/")}`,
+      })),
     }
+  );
+}
+
+function matchesRoutePattern(pattern: string, pathname: string) {
+  const patternParts = pattern.split("/").filter(Boolean);
+  const pathParts = pathname.split("/").filter(Boolean);
+
+  return (
+    patternParts.length === pathParts.length &&
+    patternParts.every((part, index) => part.startsWith(":") || part === pathParts[index])
   );
 }
 

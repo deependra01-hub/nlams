@@ -2,7 +2,6 @@ import { useEffect } from "react";
 import { ArrowLeft, Pencil } from "lucide-react";
 import { Link, Navigate, useParams } from "react-router-dom";
 import { AppCard } from "../../components/common/AppCard";
-import { Button } from "../../components/common/Button";
 import { ProjectOverview } from "../../components/projects/ProjectOverview";
 import { ProjectRiskPanel } from "../../components/projects/ProjectRiskPanel";
 import { ProjectTimeline } from "../../components/projects/ProjectTimeline";
@@ -40,9 +39,13 @@ export function ProjectDetails() {
               <ArrowLeft className="h-4 w-4" />
               Back to projects
             </Link>
-            <Button variant="ghost" leadingIcon={Pencil} disabled>
-              Edit coming next phase
-            </Button>
+            <Link
+              to={`/projects/${project.id}/edit`}
+              className="inline-flex items-center justify-center gap-2 rounded-full border border-transparent bg-transparent px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-sky-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2"
+            >
+              <Pencil className="h-4 w-4" />
+              Edit project
+            </Link>
           </div>
         </div>
       </AppCard>
