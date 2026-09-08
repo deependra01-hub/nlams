@@ -4,25 +4,52 @@ import { AppCard } from "../../components/common/AppCard";
 import { Badge } from "../../components/common/Badge";
 import { EmptyState } from "../../components/common/EmptyState";
 import { MetricCard } from "../../components/common/MetricCard";
+import { useAuth } from "../../context/AuthContext";
 import { grievanceService } from "../../services/grievance.service";
+import { useFilterStore } from "../../store/filter.store";
 import type { GrievancePriority, GrievanceStatus } from "../../types/grievance.types";
+import { getScopeTarget, inferStateFromDistrict, matchesScope, matchesSearch } from "../../utils/globalFilters";
 import { AlertTriangle, CheckCircle2, ListTodo, Siren } from "lucide-react";
 
 export function GrievanceList() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const grievances = grievanceService.getGrievances();
   const summary = grievanceService.getSummary();
+  const { searchText, geographicScope } = useFilterStore();
   const [status, setStatus] = useState<GrievanceStatus | "all">("all");
   const [priority, setPriority] = useState<GrievancePriority | "all">("all");
+  const scopeTarget = getScopeTarget(geographicScope, user?.role);
 
   const filtered = useMemo(
     () =>
       grievances.filter((item) => {
         const statusMatches = status === "all" || item.status === status;
         const priorityMatches = priority === "all" || item.priority === priority;
-        return statusMatches && priorityMatches;
+        const scopeMatches = matchesScope(
+          { state: inferStateFromDistrict(item.district), district: item.district },
+          geographicScope,
+          user?.role,
+        );
+        const searchMatches = matchesSearch(
+          [
+            item.id,
+            item.subject,
+            item.complainant,
+            item.district,
+            item.projectId,
+            item.status,
+            item.priority,
+            item.category,
+            item.assignedTo,
+            item.summary,
+            ...item.updates.map((update) => update.note),
+          ],
+          searchText,
+        );
+        return statusMatches && priorityMatches && scopeMatches && searchMatches;
       }),
-    [grievances, priority, status],
+    [geographicScope, grievances, priority, searchText, status, user?.role],
   );
 
   return (
@@ -30,9 +57,9 @@ export function GrievanceList() {
       <AppCard title="Grievances" description="Track complaints, reviews, and closure states.">
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
           <MetricCard label="Total" value={String(summary.total)} detail="All logged grievances." icon={ListTodo} />
+          <MetricCard label="Visible" value={String(filtered.length)} detail={`Filtered in ${scopeTarget.label}`} icon={CheckCircle2} />
           <MetricCard label="Open" value={String(summary.open)} detail="New items awaiting review." icon={Siren} />
           <MetricCard label="Investigating" value={String(summary.investigating)} detail="Currently under review." icon={AlertTriangle} />
-          <MetricCard label="Resolved" value={String(summary.resolved)} detail="Closed or resolved items." icon={CheckCircle2} />
         </div>
       </AppCard>
 

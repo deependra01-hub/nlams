@@ -2,16 +2,51 @@ import { useNavigate } from "react-router-dom";
 import { AppCard } from "../../components/common/AppCard";
 import { Badge } from "../../components/common/Badge";
 import { Button } from "../../components/common/Button";
+import { EmptyState } from "../../components/common/EmptyState";
 import { InfoRibbon } from "../../components/common/InfoRibbon";
 import { MetricCard } from "../../components/common/MetricCard";
+import { useAuth } from "../../context/AuthContext";
 import { useAcquisition } from "../../hooks/useAcquisition";
 import { acquisitionService } from "../../services/acquisition.service";
+import { useFilterStore } from "../../store/filter.store";
+import { getScopeTarget, matchesScope, matchesSearch } from "../../utils/globalFilters";
 import { AlertTriangle, CheckCircle2, FileText, MapPinned } from "lucide-react";
 
 export function AcquisitionDashboard() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const { cases, summary, setActiveCaseId } = useAcquisition();
-  const launchCases = cases.slice(0, 4);
+  const { searchText, geographicScope } = useFilterStore();
+  const scopeTarget = getScopeTarget(geographicScope, user?.role);
+  const filteredCases = cases.filter((entry) =>
+    matchesScope(entry, geographicScope, user?.role) &&
+    matchesSearch(
+      [
+        entry.id,
+        entry.projectId,
+        entry.parcelId,
+        entry.title,
+        entry.district,
+        entry.state,
+        entry.stage,
+        entry.status,
+        entry.priority,
+        entry.owner,
+        entry.summary,
+        ...entry.notifications,
+      ],
+      searchText,
+    ),
+  );
+  const filteredSummary = {
+    totalCases: filteredCases.length,
+    activeCases: filteredCases.filter((entry) => entry.status === "in_progress").length,
+    blockedCases: filteredCases.filter((entry) => entry.status === "blocked").length,
+    completedCases: filteredCases.filter((entry) => entry.status === "completed").length,
+    pendingHearings: filteredCases.filter((entry) => entry.stage === "hearing").length,
+    pendingPossessions: filteredCases.filter((entry) => entry.stage === "possession").length,
+  };
+  const launchCases = filteredCases.slice(0, 4);
 
   const openCase = (caseId: string) => {
     setActiveCaseId(caseId);
@@ -25,27 +60,27 @@ export function AcquisitionDashboard() {
         description="Case counts, active work, and pending handoffs are kept in a compact ribbon so the section stays easy to scan."
         items={[
           { label: "Cases", value: String(summary.totalCases) },
-          { label: "Active", value: String(summary.activeCases) },
-          { label: "Blocked", value: String(summary.blockedCases) },
-          { label: "Completed", value: String(summary.completedCases) },
+          { label: "Visible", value: String(filteredCases.length) },
+          { label: "Blocked", value: String(filteredSummary.blockedCases) },
+          { label: "Scope", value: scopeTarget.label },
         ]}
       />
 
       <section className="grid gap-4 xl:grid-cols-[1.15fr_0.85fr]">
         <AppCard title="Acquisition" description="A quiet launchpad for case review. Open a case only when needed.">
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-            <MetricCard label="Cases" value={String(summary.totalCases)} detail="Tracked workflows" icon={FileText} />
-            <MetricCard label="Active" value={String(summary.activeCases)} detail="In motion" icon={MapPinned} />
-            <MetricCard label="Blocked" value={String(summary.blockedCases)} detail="Needs resolution" icon={AlertTriangle} />
-            <MetricCard label="Completed" value={String(summary.completedCases)} detail="Closed cases" icon={CheckCircle2} />
+            <MetricCard label="Cases" value={String(filteredSummary.totalCases)} detail={`Visible in ${scopeTarget.label}`} icon={FileText} />
+            <MetricCard label="Active" value={String(filteredSummary.activeCases)} detail="In motion" icon={MapPinned} />
+            <MetricCard label="Blocked" value={String(filteredSummary.blockedCases)} detail="Needs resolution" icon={AlertTriangle} />
+            <MetricCard label="Completed" value={String(filteredSummary.completedCases)} detail="Closed cases" icon={CheckCircle2} />
           </div>
         </AppCard>
 
         <AppCard title="Signal" description="Only the smallest status summary stays visible.">
           <div className="grid gap-3">
-            <MiniLine label="Pending hearings" value={String(summary.pendingHearings)} />
-            <MiniLine label="Pending possessions" value={String(summary.pendingPossessions)} />
-            <MiniLine label="Case focus" value="Open cards only" />
+            <MiniLine label="Pending hearings" value={String(filteredSummary.pendingHearings)} />
+            <MiniLine label="Pending possessions" value={String(filteredSummary.pendingPossessions)} />
+            <MiniLine label="Header search" value={searchText.trim() || "All cases"} />
           </div>
         </AppCard>
       </section>
@@ -77,6 +112,13 @@ export function AcquisitionDashboard() {
             </div>
           </article>
         ))}
+        {launchCases.length === 0 ? (
+          <EmptyState
+            title="No acquisition cases match the header filters"
+            description="Try a broader search term or change the geographic scope."
+            icon={FileText}
+          />
+        ) : null}
       </section>
     </div>
   );

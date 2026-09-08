@@ -2,16 +2,26 @@ import { useNavigate } from "react-router-dom";
 import { AppCard } from "../../components/common/AppCard";
 import { Badge } from "../../components/common/Badge";
 import { Button } from "../../components/common/Button";
+import { EmptyState } from "../../components/common/EmptyState";
 import { InfoRibbon } from "../../components/common/InfoRibbon";
 import { MetricCard } from "../../components/common/MetricCard";
+import { useAuth } from "../../context/AuthContext";
 import { reportService } from "../../services/report.service";
+import { useFilterStore } from "../../store/filter.store";
+import { getScopeTarget, matchesSearch } from "../../utils/globalFilters";
 import { BarChart3, FileChartColumn, FileDown, ListChecks } from "lucide-react";
 
 export function Reports() {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const { searchText, geographicScope } = useFilterStore();
   const reports = reportService.getReports();
   const metrics = reportService.getMetrics();
-  const launchReports = reports.slice(0, 4);
+  const scopeTarget = getScopeTarget(geographicScope, user?.role);
+  const filteredReports = reports.filter((report) =>
+    matchesSearch([report.id, report.title, report.category, report.owner, report.format, report.status, report.summary], searchText),
+  );
+  const launchReports = filteredReports.slice(0, 4);
 
   return (
     <div className="space-y-7">
@@ -20,9 +30,9 @@ export function Reports() {
         description="The report counts stay inline so users can scan readiness without opening a separate info surface."
         items={[
           { label: "Reports", value: String(reports.length) },
-          { label: "Ready", value: String(reports.filter((report) => report.status === "ready").length) },
-          { label: "Scheduled", value: String(reports.filter((report) => report.status === "scheduled").length) },
-          { label: "Drafts", value: String(reports.filter((report) => report.status === "draft").length) },
+          { label: "Visible", value: String(filteredReports.length) },
+          { label: "Ready", value: String(filteredReports.filter((report) => report.status === "ready").length) },
+          { label: "Scope", value: scopeTarget.label },
         ]}
       />
 
@@ -43,9 +53,9 @@ export function Reports() {
 
         <AppCard title="Focus" description="A short list of the current report surface.">
           <div className="grid gap-3">
-            <MiniLine label="Reports" value={String(reports.length)} />
-            <MiniLine label="Ready" value={String(reports.filter((report) => report.status === "ready").length)} />
-            <MiniLine label="View" value="Launch cards only" />
+            <MiniLine label="Reports" value={String(filteredReports.length)} />
+            <MiniLine label="Ready" value={String(filteredReports.filter((report) => report.status === "ready").length)} />
+            <MiniLine label="Header search" value={searchText.trim() || "All reports"} />
           </div>
         </AppCard>
       </section>
@@ -76,6 +86,13 @@ export function Reports() {
             </div>
           </article>
         ))}
+        {launchReports.length === 0 ? (
+          <EmptyState
+            title="No reports match the header search"
+            description="Try a broader report title, owner, format, or category."
+            icon={FileChartColumn}
+          />
+        ) : null}
       </section>
     </div>
   );

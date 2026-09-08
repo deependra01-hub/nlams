@@ -3,22 +3,35 @@ import { useNavigate } from "react-router-dom";
 import { AppCard } from "../../components/common/AppCard";
 import { Badge } from "../../components/common/Badge";
 import { Button } from "../../components/common/Button";
+import { EmptyState } from "../../components/common/EmptyState";
 import { InfoRibbon } from "../../components/common/InfoRibbon";
 import { MetricCard } from "../../components/common/MetricCard";
+import { useAuth } from "../../context/AuthContext";
 import { useDocuments } from "../../hooks/useDocuments";
 import { documentService } from "../../services/document.service";
+import { useFilterStore } from "../../store/filter.store";
 import type { DocumentStatus } from "../../types/document.types";
+import { getScopeTarget, matchesScope, matchesSearch } from "../../utils/globalFilters";
 import { FileText, FolderSearch, ShieldCheck, Upload } from "lucide-react";
 
 export function DocumentRepository() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const { documents, stats, setActiveDocumentId } = useDocuments();
+  const { searchText, geographicScope } = useFilterStore();
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState<DocumentStatus | "all">("all");
+  const scopeTarget = getScopeTarget(geographicScope, user?.role);
 
   const filteredDocuments = useMemo(
     () =>
       documents.filter((document) => {
+        const relatedProject = documentService.getRelatedProject(document);
+        const relatedParcel = documentService.getRelatedParcel(document);
+        const scopeRecord = {
+          state: relatedProject?.state ?? relatedParcel?.state,
+          district: relatedProject?.district ?? relatedParcel?.district,
+        };
         const statusMatches = status === "all" || document.status === status;
         const normalizedQuery = query.trim().toLowerCase();
         const queryMatches =
@@ -29,14 +42,41 @@ export function DocumentRepository() {
             document.fileName,
             document.source,
             document.summary,
+            relatedProject?.name,
+            relatedParcel?.surveyNo,
+            relatedParcel?.ownerName,
             ...document.tags,
           ]
             .join(" ")
             .toLowerCase()
             .includes(normalizedQuery);
-        return statusMatches && queryMatches;
+        const globalMatches =
+          matchesScope(scopeRecord, geographicScope, user?.role) &&
+          matchesSearch(
+            [
+              document.id,
+              document.title,
+              document.referenceNo,
+              document.fileName,
+              document.source,
+              document.summary,
+              document.ownerDepartment,
+              document.type,
+              document.status,
+              relatedProject?.name,
+              relatedProject?.state,
+              relatedProject?.district,
+              relatedParcel?.surveyNo,
+              relatedParcel?.ownerName,
+              relatedParcel?.state,
+              relatedParcel?.district,
+              ...document.tags,
+            ],
+            searchText,
+          );
+        return statusMatches && queryMatches && globalMatches;
       }),
-    [documents, query, status],
+    [documents, geographicScope, query, searchText, status, user?.role],
   );
   const launchDocuments = filteredDocuments.slice(0, 4);
 
@@ -52,9 +92,9 @@ export function DocumentRepository() {
         description="Document counts, reviews, and version history are carried in a compact ribbon so the search view remains calm."
         items={[
           { label: "Documents", value: String(stats.totalDocuments) },
+          { label: "Visible", value: String(filteredDocuments.length) },
           { label: "Verified", value: String(stats.verifiedDocuments) },
-          { label: "In review", value: String(stats.pendingReviewDocuments) },
-          { label: "Versions", value: String(stats.totalVersions) },
+          { label: "Scope", value: scopeTarget.label },
         ]}
       />
 
@@ -71,7 +111,8 @@ export function DocumentRepository() {
         <AppCard title="Focus" description="Only a few quick signals stay on the surface.">
           <div className="grid gap-3">
             <MiniLine label="Filtered" value={String(filteredDocuments.length)} />
-            <MiniLine label="Search" value={query.trim() || "All records"} />
+            <MiniLine label="Page search" value={query.trim() || "All records"} />
+            <MiniLine label="Header search" value={searchText.trim() || "All records"} />
             <MiniLine label="Status" value={status === "all" ? "All statuses" : documentService.getStatusLabel(status)} />
           </div>
         </AppCard>
@@ -134,6 +175,13 @@ export function DocumentRepository() {
             </div>
           </article>
         ))}
+        {launchDocuments.length === 0 ? (
+          <EmptyState
+            title="No documents match the current filters"
+            description="Try a different header search, page search, status, or geographic scope."
+            icon={FolderSearch}
+          />
+        ) : null}
       </section>
     </div>
   );

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Outlet, useLocation } from "react-router-dom";
-import { Bell, ChevronDown, Menu, Plus, Sparkles, UserCircle2 } from "lucide-react";
+import { Bell, ChevronDown, Menu, Plus, Sparkles, UserCircle2, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useFilterStore } from "../../store/filter.store";
 import { useUiStore } from "../../store/ui.store";
@@ -17,6 +17,7 @@ import { Select } from "../common/Select";
 import { MobileNavigation } from "./MobileNavigation";
 import { useAuth } from "../../context/AuthContext";
 import { notificationService } from "../../services/notification.service";
+import { getScopeTarget } from "../../utils/globalFilters";
 
 export function MainLayout() {
   const location = useLocation();
@@ -26,6 +27,7 @@ export function MainLayout() {
   const { unreadCount } = useNotificationStore();
   const navigate = useNavigate();
   const routeHeader = useMemo(() => getRouteHeader(location.pathname), [location.pathname]);
+  const scopeTarget = getScopeTarget(geographicScope, user?.role);
   const [sessionRibbonVisible, setSessionRibbonVisible] = useState(false);
   const welcomeRequested = (location.state as { showWelcome?: boolean } | null)?.showWelcome === true;
 
@@ -80,13 +82,18 @@ export function MainLayout() {
               </div>
 
               <div className="flex flex-1 flex-wrap items-center gap-2 xl:justify-end">
-                <SearchBar
-                  label="Global search"
-                  placeholder="Search projects, parcels, officers"
-                  className="max-w-xl"
-                  value={searchText}
-                  onChange={(event) => setSearchText(event.target.value)}
-                />
+                <div className="flex min-w-[12rem] flex-1 items-center gap-2 xl:max-w-xl">
+                  <SearchBar
+                    label="Global search"
+                    placeholder="Search projects, parcels, officers"
+                    className="w-full"
+                    value={searchText}
+                    onChange={(event) => setSearchText(event.target.value)}
+                  />
+                  {searchText.trim() ? (
+                    <IconButton icon={X} label="Clear global search" onClick={() => setSearchText("")} />
+                  ) : null}
+                </div>
                 <Select
                   label="Geographic scope"
                   value={geographicScope}
@@ -98,6 +105,9 @@ export function MainLayout() {
                     </option>
                   ))}
                 </Select>
+                <div className="rounded-full border border-sky-100 bg-white/90 px-3 py-2 text-xs font-semibold text-blue-700 shadow-sm">
+                  {scopeTarget.label}
+                </div>
 
                 <Button
                   variant="secondary"

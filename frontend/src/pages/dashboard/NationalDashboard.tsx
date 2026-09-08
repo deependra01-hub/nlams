@@ -29,6 +29,8 @@ import { aiService } from "../../services/ai.service";
 import { notificationService } from "../../services/notification.service";
 import { reportService } from "../../services/report.service";
 import { simulatorService } from "../../services/simulator.service";
+import { useFilterStore } from "../../store/filter.store";
+import { getScopeTarget, matchesSearch } from "../../utils/globalFilters";
 
 const PROJECT_ROWS = [
   { name: "Guwahati Smart City", location: "Guwahati, Assam", plots: "320", area: "2,450 ac", status: "Active", tone: "success" as const },
@@ -47,10 +49,22 @@ const ACTIVITY_ROWS = [
 export function NationalDashboard() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { searchText, geographicScope } = useFilterStore();
   const { stats: projectStats } = useProjects();
   const { stats: parcelStats } = useParcels();
   const { summary: compensationSummary } = useCompensation();
   const { summary: rrSummary } = useRehabilitation();
+  const scopeTarget = getScopeTarget(geographicScope, user?.role);
+  const filteredProjectRows = PROJECT_ROWS.filter((row) =>
+    matchesSearch([row.name, row.location, row.status, row.area, row.plots], searchText),
+  );
+  const filteredNavItems = PRIMARY_NAV_ITEMS.filter(
+    (item) =>
+      item.available &&
+      item.path !== "/dashboard" &&
+      !item.hiddenRoles?.includes(user?.role ?? "central_admin") &&
+      matchesSearch([item.label, item.description, item.path], searchText),
+  ).slice(0, 6);
   const quickStats = useMemo(
     () => [
       {
@@ -102,7 +116,7 @@ export function NationalDashboard() {
           { label: "Parcels", value: String(parcelStats.totalParcels) },
           { label: "Compensation", value: String(compensationSummary.totalCases) },
           { label: "R&R", value: String(rrSummary.totalFamilies) },
-          { label: "Risks", value: String(aiService.getSummary().criticalRisks) },
+          { label: "Scope", value: scopeTarget.label },
         ]}
       />
 
@@ -279,7 +293,7 @@ export function NationalDashboard() {
               <span>Status</span>
             </div>
             <div className="divide-y divide-sky-100 bg-transparent">
-              {PROJECT_ROWS.map((row) => (
+              {filteredProjectRows.map((row) => (
                 <div key={row.name} className="grid grid-cols-[1.3fr_1fr_0.6fr_0.8fr_0.7fr] gap-2 px-4 py-4 text-sm">
                   <span className="font-semibold text-violet-700">{row.name}</span>
                   <span className="text-blue-700/75">{row.location}</span>
@@ -288,6 +302,11 @@ export function NationalDashboard() {
                   <Badge tone={row.tone}>{row.status}</Badge>
                 </div>
               ))}
+              {filteredProjectRows.length === 0 ? (
+                <div className="px-4 py-6 text-sm font-semibold text-blue-700">
+                  No recent projects match the header search.
+                </div>
+              ) : null}
             </div>
           </div>
         </AppCard>
@@ -331,11 +350,7 @@ export function NationalDashboard() {
       <section className="grid gap-4 lg:grid-cols-2">
         <AppCard title="Fast links" description="Open a page without scanning long summaries.">
           <div className="grid gap-3 sm:grid-cols-2">
-            {PRIMARY_NAV_ITEMS.filter(
-              (item) => item.available && item.path !== "/dashboard" && !item.hiddenRoles?.includes(user?.role ?? "central_admin"),
-            )
-              .slice(0, 6)
-              .map((item) => (
+            {filteredNavItems.map((item) => (
                 <Link
                   key={item.path}
                   to={item.path}
@@ -345,6 +360,11 @@ export function NationalDashboard() {
                   <p className="mt-1 text-sm leading-6 text-blue-700/75">{item.description}</p>
                 </Link>
               ))}
+            {filteredNavItems.length === 0 ? (
+              <p className="rounded-2xl border border-sky-100 bg-white px-4 py-4 text-sm font-semibold text-blue-700">
+                No fast links match the header search.
+              </p>
+            ) : null}
           </div>
         </AppCard>
 

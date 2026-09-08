@@ -2,17 +2,48 @@ import { Link, useNavigate } from "react-router-dom";
 import { AppCard } from "../../components/common/AppCard";
 import { Badge } from "../../components/common/Badge";
 import { Button } from "../../components/common/Button";
+import { EmptyState } from "../../components/common/EmptyState";
 import { InfoRibbon } from "../../components/common/InfoRibbon";
 import { MetricCard } from "../../components/common/MetricCard";
+import { useAuth } from "../../context/AuthContext";
 import { useCompensation } from "../../hooks/useCompensation";
 import { compensationService } from "../../services/compensation.service";
+import { useFilterStore } from "../../store/filter.store";
+import type { CompensationCase } from "../../types/compensation.types";
 import { formatCurrencyInCrore } from "../../utils/formatters";
+import { getScopeTarget, matchesScope, matchesSearch } from "../../utils/globalFilters";
 import { DollarSign, FileText, ShieldAlert, Wallet } from "lucide-react";
 
 export function CompensationDashboard() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const { cases, summary, setActiveCaseId } = useCompensation();
+  const { searchText, geographicScope } = useFilterStore();
   const payments = compensationService.getPayments();
+  const scopeTarget = getScopeTarget(geographicScope, user?.role);
+  const filteredCases = cases.filter((item) =>
+    matchesScope(item, geographicScope, user?.role) &&
+    matchesSearch(
+      [
+        item.id,
+        item.parcelId,
+        item.projectId,
+        item.ownerName,
+        item.village,
+        item.district,
+        item.state,
+        item.status,
+        item.reviewOwner,
+        item.paymentMode,
+        item.bankStatus,
+        item.auditFlag,
+      ],
+      searchText,
+    ),
+  );
+  const filteredSummary = getCompensationSummary(filteredCases);
+  const visibleCaseIds = new Set(filteredCases.map((item) => item.parcelId));
+  const filteredPayments = payments.filter((payment) => visibleCaseIds.has(payment.parcelId));
 
   const openCase = (caseId: string) => {
     setActiveCaseId(caseId);
@@ -26,33 +57,33 @@ export function CompensationDashboard() {
         description="Cases, approvals, disbursements, and the current payout envelope are shown as a quiet inline ribbon."
         items={[
           { label: "Cases", value: String(summary.totalCases) },
-          { label: "Approved", value: String(summary.approvedCases) },
-          { label: "Disbursed", value: String(summary.disbursedCases) },
-          { label: "Payout", value: formatCurrencyInCrore(summary.totalPayoutLakh / 100) },
+          { label: "Visible", value: String(filteredSummary.totalCases) },
+          { label: "Payout", value: formatCurrencyInCrore(filteredSummary.totalPayoutLakh / 100) },
+          { label: "Scope", value: scopeTarget.label },
         ]}
       />
 
       <section className="grid gap-4 xl:grid-cols-[1.15fr_0.85fr]">
         <AppCard title="Compensation" description="A light review surface for awards and payouts.">
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-            <MetricCard label="Cases" value={String(summary.totalCases)} detail="Current queue" icon={FileText} />
-            <MetricCard label="Approved" value={String(summary.approvedCases)} detail="Ready for payment" icon={ShieldAlert} />
-            <MetricCard label="Disbursed" value={String(summary.disbursedCases)} detail="Paid and closed" icon={Wallet} />
-            <MetricCard label="Payout" value={formatCurrencyInCrore(summary.totalPayoutLakh / 100)} detail="Total award value" icon={DollarSign} />
+            <MetricCard label="Cases" value={String(filteredSummary.totalCases)} detail={`Visible in ${scopeTarget.label}`} icon={FileText} />
+            <MetricCard label="Approved" value={String(filteredSummary.approvedCases)} detail="Ready for payment" icon={ShieldAlert} />
+            <MetricCard label="Disbursed" value={String(filteredSummary.disbursedCases)} detail="Paid and closed" icon={Wallet} />
+            <MetricCard label="Payout" value={formatCurrencyInCrore(filteredSummary.totalPayoutLakh / 100)} detail="Filtered award value" icon={DollarSign} />
           </div>
         </AppCard>
 
         <AppCard title="Immediate view" description="Short signals only.">
           <div className="grid gap-3">
-            <MiniLine label="Audit flags" value={String(summary.auditFlags)} />
-            <MiniLine label="Pending payout" value={formatCurrencyInCrore(summary.pendingPayoutLakh / 100)} />
-            <MiniLine label="Open cases" value={String(cases.filter((item) => item.status !== "disbursed").length)} />
+            <MiniLine label="Audit flags" value={String(filteredSummary.auditFlags)} />
+            <MiniLine label="Pending payout" value={formatCurrencyInCrore(filteredSummary.pendingPayoutLakh / 100)} />
+            <MiniLine label="Header search" value={searchText.trim() || "All cases"} />
           </div>
         </AppCard>
       </section>
 
       <section className="grid gap-4 xl:grid-cols-2">
-        {cases.map((item) => (
+        {filteredCases.map((item) => (
           <article key={item.id} className="rounded-[28px] border border-sky-100 bg-[linear-gradient(180deg,rgba(255,255,255,0.98)_0%,rgba(245,249,255,0.94)_100%)] p-6 shadow-[0_12px_40px_rgba(15,29,47,0.05)]">
             <div className="flex items-start justify-between gap-4">
               <div>
@@ -76,12 +107,19 @@ export function CompensationDashboard() {
             </div>
           </article>
         ))}
+        {filteredCases.length === 0 ? (
+          <EmptyState
+            title="No compensation cases match the header filters"
+            description="Try a broader search term or change the geographic scope."
+            icon={FileText}
+          />
+        ) : null}
       </section>
 
       <section className="grid gap-4 xl:grid-cols-[1fr_0.9fr]">
         <AppCard title="Payment queue" description="Just the current list, no full ledger surface.">
           <div className="space-y-3">
-            {payments.slice(0, 3).map((payment) => (
+            {filteredPayments.slice(0, 3).map((payment) => (
             <div key={payment.id} className="rounded-2xl border border-sky-100 bg-white/90 px-4 py-4">
                 <div className="flex items-start justify-between gap-3">
                   <div>
@@ -94,6 +132,11 @@ export function CompensationDashboard() {
                 </div>
               </div>
             ))}
+            {filteredPayments.length === 0 ? (
+              <p className="rounded-2xl border border-sky-100 bg-white/90 px-4 py-4 text-sm font-semibold text-blue-700">
+                No payments match the current case filters.
+              </p>
+            ) : null}
           </div>
           <div className="mt-5">
             <Button variant="secondary" onClick={() => navigate("/compensation/payments")}>
@@ -118,6 +161,17 @@ export function CompensationDashboard() {
 
     </div>
   );
+}
+
+function getCompensationSummary(cases: CompensationCase[]) {
+  return {
+    totalCases: cases.length,
+    approvedCases: cases.filter((entry) => entry.status === "approved").length,
+    disbursedCases: cases.filter((entry) => entry.status === "disbursed").length,
+    totalPayoutLakh: cases.reduce((sum, entry) => sum + entry.totalAmountLakh, 0),
+    pendingPayoutLakh: cases.filter((entry) => entry.status !== "disbursed").reduce((sum, entry) => sum + entry.totalAmountLakh, 0),
+    auditFlags: cases.filter((entry) => entry.auditFlag).length,
+  };
 }
 
 function MiniLine({ label, value }: { label: string; value: string }) {

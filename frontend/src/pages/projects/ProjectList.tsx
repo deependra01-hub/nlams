@@ -2,16 +2,42 @@ import { useNavigate } from "react-router-dom";
 import { AppCard } from "../../components/common/AppCard";
 import { Badge } from "../../components/common/Badge";
 import { Button } from "../../components/common/Button";
+import { EmptyState } from "../../components/common/EmptyState";
 import { InfoRibbon } from "../../components/common/InfoRibbon";
 import { MetricCard } from "../../components/common/MetricCard";
+import { useAuth } from "../../context/AuthContext";
 import { useProjects } from "../../hooks/useProjects";
 import { projectService } from "../../services/project.service";
+import { useFilterStore } from "../../store/filter.store";
+import type { Project } from "../../types/project.types";
 import { formatCurrencyInCrore, formatPercentage } from "../../utils/formatters";
-import { BarChart3, MapPinned, Users } from "lucide-react";
+import { getScopeTarget, matchesScope, matchesSearch } from "../../utils/globalFilters";
+import { BarChart3, FolderSearch, MapPinned, Users } from "lucide-react";
 
 export function ProjectList() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const { projects, stats, setActiveProjectId } = useProjects();
+  const { searchText, geographicScope } = useFilterStore();
+  const scopeTarget = getScopeTarget(geographicScope, user?.role);
+  const filteredProjects = projects.filter((project) =>
+    matchesScope(project, geographicScope, user?.role) &&
+    matchesSearch(
+      [
+        project.id,
+        project.code,
+        project.name,
+        project.state,
+        project.district,
+        project.agency,
+        project.status,
+        project.description,
+        ...project.issues.map((issue) => issue.title),
+      ],
+      searchText,
+    ),
+  );
+  const filteredStats = getProjectStats(filteredProjects);
 
   const openProject = (projectId: string) => {
     setActiveProjectId(projectId);
@@ -25,32 +51,33 @@ export function ProjectList() {
         description="The current portfolio stats stay in a slim ribbon rather than a separate focus panel."
         items={[
           { label: "Projects", value: String(stats.totalProjects) },
+          { label: "Visible", value: String(filteredProjects.length) },
           { label: "Budget", value: formatCurrencyInCrore(stats.totalBudgetCrore) },
           { label: "Avg progress", value: formatPercentage(stats.averageProgress) },
-          { label: "High risk", value: String(stats.highRiskProjects) },
+          { label: "Scope", value: scopeTarget.label },
         ]}
       />
 
       <section className="grid gap-4 xl:grid-cols-[1.05fr_0.95fr]">
         <AppCard title="Projects" description="A quiet portfolio view. Open a card for more detail.">
           <div className="grid gap-3 sm:grid-cols-3">
-            <MetricCard label="Projects" value={String(stats.totalProjects)} detail="Current portfolio" icon={BarChart3} />
-            <MetricCard label="Budget" value={formatCurrencyInCrore(stats.totalBudgetCrore)} detail="Estimated envelope" icon={MapPinned} />
-            <MetricCard label="Avg progress" value={formatPercentage(stats.averageProgress)} detail="Portfolio mean" icon={Users} />
+            <MetricCard label="Projects" value={String(filteredStats.totalProjects)} detail={`Visible in ${scopeTarget.label}`} icon={BarChart3} />
+            <MetricCard label="Budget" value={formatCurrencyInCrore(filteredStats.totalBudgetCrore)} detail="Filtered envelope" icon={MapPinned} />
+            <MetricCard label="Avg progress" value={formatPercentage(filteredStats.averageProgress)} detail="Filtered mean" icon={Users} />
           </div>
         </AppCard>
 
         <AppCard title="Focus" description="Only the sharpest signals stay on the surface.">
           <div className="grid gap-3">
-            <MiniLine label="High-risk projects" value={String(stats.highRiskProjects)} />
-            <MiniLine label="Active issues" value={String(stats.activeIssues)} />
-            <MiniLine label="Planning" value={String(projectService.listProjects("planning").length)} />
+            <MiniLine label="High-risk projects" value={String(filteredStats.highRiskProjects)} />
+            <MiniLine label="Active issues" value={String(filteredStats.activeIssues)} />
+            <MiniLine label="Header search" value={searchText.trim() || "All projects"} />
           </div>
         </AppCard>
       </section>
 
       <section className="grid gap-4 xl:grid-cols-2">
-        {projects.map((project) => (
+        {filteredProjects.map((project) => (
           <article
             key={project.id}
             className="rounded-[28px] border border-sky-100 bg-[linear-gradient(180deg,rgba(255,255,255,0.98)_0%,rgba(244,248,255,0.94)_100%)] p-6 shadow-[0_12px_40px_rgba(15,29,47,0.05)]"
@@ -76,9 +103,30 @@ export function ProjectList() {
             </div>
           </article>
         ))}
+        {filteredProjects.length === 0 ? (
+          <EmptyState
+            title="No projects match the header filters"
+            description="Try a broader search or switch the geographic scope back to National."
+            icon={FolderSearch}
+          />
+        ) : null}
       </section>
     </div>
   );
+}
+
+function getProjectStats(projects: Project[]) {
+  const totalBudgetCrore = projects.reduce((sum, project) => sum + project.budgetCrore, 0);
+  const averageProgress =
+    projects.length === 0 ? 0 : Math.round(projects.reduce((sum, project) => sum + project.progress, 0) / projects.length);
+
+  return {
+    totalProjects: projects.length,
+    totalBudgetCrore,
+    averageProgress,
+    activeIssues: projects.reduce((sum, project) => sum + project.issues.length, 0),
+    highRiskProjects: projects.filter((project) => project.riskScore >= 70).length,
+  };
 }
 
 function MiniLine({ label, value }: { label: string; value: string }) {

@@ -2,16 +2,46 @@ import { Link, useNavigate } from "react-router-dom";
 import { AppCard } from "../../components/common/AppCard";
 import { Badge } from "../../components/common/Badge";
 import { Button } from "../../components/common/Button";
+import { EmptyState } from "../../components/common/EmptyState";
 import { InfoRibbon } from "../../components/common/InfoRibbon";
 import { MetricCard } from "../../components/common/MetricCard";
+import { useAuth } from "../../context/AuthContext";
 import { useRehabilitation } from "../../hooks/useRehabilitation";
 import { rehabilitationService } from "../../services/rehabilitation.service";
+import { useFilterStore } from "../../store/filter.store";
+import type { RRFamily } from "../../types/rr.types";
 import { formatCurrencyInCrore } from "../../utils/formatters";
+import { getScopeTarget, matchesScope, matchesSearch } from "../../utils/globalFilters";
 import { Home, MapPinned, ShieldCheck, Users } from "lucide-react";
 
 export function RRDashboard() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const { families, summary, milestones, setActiveFamilyId } = useRehabilitation();
+  const { searchText, geographicScope } = useFilterStore();
+  const scopeTarget = getScopeTarget(geographicScope, user?.role);
+  const filteredFamilies = families.filter((family) =>
+    matchesScope(family, geographicScope, user?.role) &&
+    matchesSearch(
+      [
+        family.id,
+        family.headName,
+        family.village,
+        family.district,
+        family.state,
+        family.parcelId,
+        family.projectId,
+        family.displacementType,
+        family.livelihoodSource,
+        family.housingOption,
+        family.status,
+        family.counsellor,
+        family.remarks,
+      ],
+      searchText,
+    ),
+  );
+  const filteredSummary = getRrSummary(filteredFamilies);
   const openFamily = (familyId: string) => {
     setActiveFamilyId(familyId);
     navigate("/rr/families");
@@ -24,33 +54,33 @@ export function RRDashboard() {
         description="Family progress, completions, and support benefits stay in a slim ribbon instead of a stacked status box."
         items={[
           { label: "Families", value: String(summary.totalFamilies) },
-          { label: "Completed", value: String(summary.completedFamilies) },
-          { label: "In progress", value: String(summary.inProgressFamilies) },
-          { label: "Benefits", value: formatCurrencyInCrore(summary.totalBenefitLakh / 100) },
+          { label: "Visible", value: String(filteredSummary.totalFamilies) },
+          { label: "Benefits", value: formatCurrencyInCrore(filteredSummary.totalBenefitLakh / 100) },
+          { label: "Scope", value: scopeTarget.label },
         ]}
       />
 
       <section className="grid gap-4 xl:grid-cols-[1fr_0.9fr]">
         <AppCard title="R&R" description="A lighter view for family rehabilitation and resettlement.">
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-            <MetricCard label="Families" value={String(summary.totalFamilies)} detail="Current queue" icon={Users} />
-            <MetricCard label="Completed" value={String(summary.completedFamilies)} detail="Marked complete" icon={ShieldCheck} />
-            <MetricCard label="In progress" value={String(summary.inProgressFamilies)} detail="Active support" icon={MapPinned} />
-            <MetricCard label="Benefits" value={formatCurrencyInCrore(summary.totalBenefitLakh / 100)} detail="Support total" icon={Home} />
+            <MetricCard label="Families" value={String(filteredSummary.totalFamilies)} detail={`Visible in ${scopeTarget.label}`} icon={Users} />
+            <MetricCard label="Completed" value={String(filteredSummary.completedFamilies)} detail="Marked complete" icon={ShieldCheck} />
+            <MetricCard label="In progress" value={String(filteredSummary.inProgressFamilies)} detail="Active support" icon={MapPinned} />
+            <MetricCard label="Benefits" value={formatCurrencyInCrore(filteredSummary.totalBenefitLakh / 100)} detail="Filtered support total" icon={Home} />
           </div>
         </AppCard>
 
         <AppCard title="Status" description="Only the essentials.">
           <div className="grid gap-3">
-            <MiniLine label="Pending house sites" value={String(summary.pendingHouseSites)} />
-            <MiniLine label="Completion rate" value={`${Math.round((summary.completedFamilies / summary.totalFamilies) * 100)}%`} />
-            <MiniLine label="Milestones" value={String(milestones.length)} />
+            <MiniLine label="Pending house sites" value={String(filteredSummary.pendingHouseSites)} />
+            <MiniLine label="Completion rate" value={`${filteredSummary.completionRate}%`} />
+            <MiniLine label="Header search" value={searchText.trim() || "All families"} />
           </div>
         </AppCard>
       </section>
 
       <section className="grid gap-4 xl:grid-cols-2">
-        {families.map((family) => (
+        {filteredFamilies.map((family) => (
           <article key={family.id} className="rounded-[28px] border border-sky-100 bg-[linear-gradient(180deg,rgba(255,255,255,0.98)_0%,rgba(244,248,255,0.94)_100%)] p-6 shadow-[0_12px_40px_rgba(15,29,47,0.05)]">
             <div className="flex items-start justify-between gap-4">
               <div>
@@ -75,6 +105,13 @@ export function RRDashboard() {
             </div>
           </article>
         ))}
+        {filteredFamilies.length === 0 ? (
+          <EmptyState
+            title="No R&R families match the header filters"
+            description="Try a broader search term or change the geographic scope."
+            icon={Users}
+          />
+        ) : null}
       </section>
 
       <section className="grid gap-4 lg:grid-cols-[0.9fr_1.1fr]">
@@ -113,6 +150,20 @@ export function RRDashboard() {
       </section>
     </div>
   );
+}
+
+function getRrSummary(families: RRFamily[]) {
+  const totalFamilies = families.length;
+  const completedFamilies = families.filter((family) => family.status === "completed").length;
+
+  return {
+    totalFamilies,
+    completedFamilies,
+    inProgressFamilies: families.filter((family) => family.status === "in_progress" || family.status === "partially_completed").length,
+    totalBenefitLakh: families.reduce((sum, family) => sum + family.rehabilitationBenefitLakh, 0),
+    pendingHouseSites: families.filter((family) => family.housingOption.includes("pending")).length,
+    completionRate: totalFamilies === 0 ? 0 : Math.round((completedFamilies / totalFamilies) * 100),
+  };
 }
 
 function MiniLine({ label, value }: { label: string; value: string }) {

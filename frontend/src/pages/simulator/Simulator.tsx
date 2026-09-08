@@ -5,20 +5,34 @@ import { Badge } from "../../components/common/Badge";
 import { Button } from "../../components/common/Button";
 import { EmptyState } from "../../components/common/EmptyState";
 import { MetricCard } from "../../components/common/MetricCard";
+import { useAuth } from "../../context/AuthContext";
+import { parcelService } from "../../services/parcel.service";
+import { projectService } from "../../services/project.service";
 import { simulatorService } from "../../services/simulator.service";
+import { useFilterStore } from "../../store/filter.store";
 import type { ScenarioStatus } from "../../types/simulator.types";
+import { getScopeTarget, matchesScope, matchesSearch } from "../../utils/globalFilters";
 import { Sparkles, TriangleAlert, Wallet, Waypoints } from "lucide-react";
 
 export function Simulator() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const scenarios = simulatorService.getScenarios();
   const summary = simulatorService.getSummary();
+  const { searchText, geographicScope } = useFilterStore();
   const [status, setStatus] = useState<ScenarioStatus | "all">("all");
   const [query, setQuery] = useState("");
+  const scopeTarget = getScopeTarget(geographicScope, user?.role);
 
   const filtered = useMemo(() => {
     const normalized = query.trim().toLowerCase();
     return scenarios.filter((scenario) => {
+      const project = projectService.getProjectById(scenario.projectId);
+      const parcel = parcelService.getParcelById(scenario.parcelId);
+      const scopeRecord = {
+        state: project?.state ?? parcel?.state,
+        district: project?.district ?? parcel?.district,
+      };
       const matchesStatus = status === "all" || scenario.status === status;
       const matchesQuery =
         normalized.length === 0 ||
@@ -26,16 +40,37 @@ export function Simulator() {
           .join(" ")
           .toLowerCase()
           .includes(normalized);
-      return matchesStatus && matchesQuery;
+      const matchesGlobal =
+        matchesScope(scopeRecord, geographicScope, user?.role) &&
+        matchesSearch(
+          [
+            scenario.id,
+            scenario.name,
+            scenario.description,
+            scenario.projectId,
+            scenario.parcelId,
+            scenario.status,
+            project?.name,
+            project?.state,
+            project?.district,
+            parcel?.surveyNo,
+            parcel?.ownerName,
+            parcel?.state,
+            parcel?.district,
+            ...scenario.assumptions,
+          ],
+          searchText,
+        );
+      return matchesStatus && matchesQuery && matchesGlobal;
     });
-  }, [query, scenarios, status]);
+  }, [geographicScope, query, scenarios, searchText, status, user?.role]);
 
   return (
     <div className="space-y-7">
       <AppCard title="Impact simulator" description="Test acquisition scenarios before they affect the workflow.">
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
           <MetricCard label="Scenarios" value={String(summary.totalScenarios)} detail="Saved simulation setups." icon={Sparkles} />
-          <MetricCard label="Active" value={String(summary.activeScenarios)} detail="Currently selected." icon={Waypoints} />
+          <MetricCard label="Visible" value={String(filtered.length)} detail={`Filtered in ${scopeTarget.label}`} icon={Waypoints} />
           <MetricCard label="Average cost" value={`${summary.averageCostLakh} lakh`} detail="Estimated financial impact." icon={Wallet} />
           <MetricCard label="High risk" value={String(summary.highRiskScenarios)} detail="Requires review." icon={TriangleAlert} />
         </div>

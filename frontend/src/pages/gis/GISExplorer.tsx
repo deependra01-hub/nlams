@@ -9,9 +9,12 @@ import { LayerSwitcher } from "../../components/gis/LayerSwitcher";
 import { MapControls } from "../../components/gis/MapControls";
 import { MapLegend } from "../../components/gis/MapLegend";
 import { MapView } from "../../components/gis/MapView";
+import { useAuth } from "../../context/AuthContext";
 import { gisService } from "../../services/gis.service";
+import { useFilterStore } from "../../store/filter.store";
 import type { GisFeature, GisLayerId } from "../../types/gis.types";
 import { formatPercentage } from "../../utils/formatters";
+import { getScopeTarget, matchesScope, matchesSearch } from "../../utils/globalFilters";
 import { MapPinned, Radar, ShieldAlert, SquareKanban } from "lucide-react";
 
 const DEFAULT_LAYERS: Record<GisLayerId, boolean> = {
@@ -23,15 +26,46 @@ const DEFAULT_LAYERS: Record<GisLayerId, boolean> = {
 
 export function GISExplorer() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const features = gisService.getFeatures();
-  const layers = gisService.getLayers();
-  const stats = gisService.getStats();
+  const { searchText, geographicScope } = useFilterStore();
+  const scopeTarget = getScopeTarget(geographicScope, user?.role);
   const [mapCenter, setMapCenter] = useState(gisService.getMapCenter());
   const [activeLayers, setActiveLayers] = useState<Record<GisLayerId, boolean>>(DEFAULT_LAYERS);
+  const scopedFeatures = useMemo(
+    () =>
+      features.filter((feature) =>
+        matchesScope(feature, geographicScope, user?.role) &&
+        matchesSearch(
+          [
+            feature.id,
+            feature.kind,
+            feature.label,
+            feature.subtitle,
+            feature.description,
+            feature.district,
+            feature.state,
+            feature.status,
+            feature.layer,
+          ],
+          searchText,
+        ),
+      ),
+    [features, geographicScope, searchText, user?.role],
+  );
+  const layers = useMemo(
+    () =>
+      gisService.getLayers().map((layer) => ({
+        ...layer,
+        count: scopedFeatures.filter((feature) => feature.layer === layer.id).length,
+      })),
+    [scopedFeatures],
+  );
+  const stats = useMemo(() => getGisStats(scopedFeatures), [scopedFeatures]);
 
   const visibleFeatures = useMemo(
-    () => features.filter((feature) => activeLayers[feature.layer]),
-    [activeLayers, features],
+    () => scopedFeatures.filter((feature) => activeLayers[feature.layer]),
+    [activeLayers, scopedFeatures],
   );
   const highRiskFeature = useMemo(
     () => [...visibleFeatures].sort((left, right) => right.risk - left.risk)[0] ?? null,
@@ -96,14 +130,14 @@ export function GISExplorer() {
           { label: "Features", value: String(stats.total) },
           { label: "High risk", value: String(stats.highRisk) },
           { label: "Progress", value: formatPercentage(stats.averageProgress) },
-          { label: "Coverage", value: `${stats.projectCount}/${stats.parcelCount}` },
+          { label: "Scope", value: scopeTarget.label },
         ]}
       />
 
       <section className="grid gap-4 xl:grid-cols-[1fr_0.9fr]">
         <AppCard title="GIS Explorer" description="Visible map first, detail second. Keep the spatial layer calm and click-through only.">
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-            <MetricCard label="Features" value={String(stats.total)} detail="Spatial records" icon={Radar} />
+            <MetricCard label="Features" value={String(stats.total)} detail={`Visible in ${scopeTarget.label}`} icon={Radar} />
             <MetricCard label="High risk" value={String(stats.highRisk)} detail="Needs review" icon={ShieldAlert} />
             <MetricCard label="Progress" value={formatPercentage(stats.averageProgress)} detail="Average across layers" icon={MapPinned} />
             <MetricCard label="Coverage" value={`${stats.projectCount}/${stats.parcelCount}`} detail="Projects / parcels" icon={SquareKanban} />
@@ -144,6 +178,11 @@ export function GISExplorer() {
                   </div>
                 </button>
               ))}
+              {spotlightFeatures.length === 0 ? (
+                <p className="rounded-2xl border border-sky-100 bg-white/90 px-4 py-4 text-sm font-semibold text-blue-700">
+                  No map features match the header search and scope.
+                </p>
+              ) : null}
             </div>
           </AppCard>
 
@@ -171,4 +210,16 @@ export function GISExplorer() {
       </section>
     </div>
   );
+}
+
+function getGisStats(features: GisFeature[]) {
+  const total = features.length;
+
+  return {
+    total,
+    highRisk: features.filter((feature) => feature.risk >= 70).length,
+    averageProgress: total === 0 ? 0 : Math.round(features.reduce((sum, feature) => sum + feature.progress, 0) / total),
+    projectCount: features.filter((feature) => feature.kind === "project").length,
+    parcelCount: features.filter((feature) => feature.kind === "parcel").length,
+  };
 }

@@ -5,24 +5,53 @@ import { MetricCard } from "../../components/common/MetricCard";
 import { FamilyDetails } from "../../components/rehabilitation/FamilyDetails";
 import { FamilyTable } from "../../components/rehabilitation/FamilyTable";
 import { DisplacementPanel } from "../../components/rehabilitation/DisplacementPanel";
+import { useAuth } from "../../context/AuthContext";
 import { useRehabilitation } from "../../hooks/useRehabilitation";
-import { rehabilitationService } from "../../services/rehabilitation.service";
+import { useFilterStore } from "../../store/filter.store";
 import type { RRStatus } from "../../types/rr.types";
 import { formatCurrencyInCrore } from "../../utils/formatters";
+import { getScopeTarget, matchesScope, matchesSearch } from "../../utils/globalFilters";
 import { Home, Users } from "lucide-react";
 
 export function Families() {
+  const { user } = useAuth();
   const { families, summary, setActiveFamilyId } = useRehabilitation();
+  const { searchText, geographicScope } = useFilterStore();
   const [status, setStatus] = useState<RRStatus | "all">("all");
   const [selectedFamilyId, setSelectedFamilyId] = useState(families[0]?.id ?? null);
+  const scopeTarget = getScopeTarget(geographicScope, user?.role);
 
   const filteredFamilies = useMemo(
-    () => (status === "all" ? families : families.filter((family) => family.status === status)),
-    [families, status],
+    () =>
+      families.filter((family) => {
+        const statusMatches = status === "all" || family.status === status;
+        const scopeMatches = matchesScope(family, geographicScope, user?.role);
+        const searchMatches = matchesSearch(
+          [
+            family.id,
+            family.headName,
+            family.village,
+            family.district,
+            family.state,
+            family.parcelId,
+            family.projectId,
+            family.displacementType,
+            family.livelihoodSource,
+            family.housingOption,
+            family.status,
+            family.counsellor,
+            family.remarks,
+          ],
+          searchText,
+        );
+
+        return statusMatches && scopeMatches && searchMatches;
+      }),
+    [families, geographicScope, searchText, status, user?.role],
   );
 
   const selectedFamily = useMemo(
-    () => rehabilitationService.getFamilyById(selectedFamilyId ?? "") ?? filteredFamilies[0] ?? null,
+    () => filteredFamilies.find((family) => family.id === selectedFamilyId) ?? filteredFamilies[0] ?? null,
     [filteredFamilies, selectedFamilyId],
   );
 
@@ -39,7 +68,7 @@ export function Families() {
       >
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
           <MetricCard label="Families" value={String(summary.totalFamilies)} detail="Households in the R&R phase." icon={Users} />
-          <MetricCard label="Completed" value={String(summary.completedFamilies)} detail="Marked complete." icon={Home} />
+          <MetricCard label="Visible" value={String(filteredFamilies.length)} detail={`Filtered in ${scopeTarget.label}`} icon={Home} />
           <MetricCard label="Benefits" value={formatCurrencyInCrore(summary.totalBenefitLakh / 100)} detail="Total support value." icon={Home} />
           <MetricCard label="Pending sites" value={String(summary.pendingHouseSites)} detail="House sites still pending." icon={Users} />
         </div>
@@ -69,7 +98,7 @@ export function Families() {
         ) : (
           <EmptyState
             title="No families match the selected status"
-            description="Try another status filter to review the full R&R queue."
+            description="Try another status, search term, or geographic scope."
             icon={Users}
           />
         )}
