@@ -136,13 +136,6 @@ export function MainLayout() {
             title={routeHeader.title}
             description={routeHeader.description}
             breadcrumbs={routeHeader.breadcrumbs}
-            actions={
-              <>
-                <Button variant="secondary" onClick={() => navigate("/notifications")} className="border-violet-200 bg-white text-violet-800">
-                  Notifications
-                </Button>
-              </>
-            }
           />
 
           {sessionRibbonVisible ? (
@@ -155,7 +148,6 @@ export function MainLayout() {
                 { label: "Alerts", value: String(notificationService.getNotifications().filter((item) => item.kind === "alert").length) },
                 { label: "Updates", value: String(notificationService.getNotifications().filter((item) => item.kind !== "alert").length) },
               ]}
-              action={{ label: "Open notifications", onClick: () => navigate("/notifications") }}
               onDismiss={closeSessionRibbon}
             >
               <div className="grid gap-3 sm:grid-cols-3">
@@ -203,7 +195,6 @@ function ProfileMenu() {
           <p className="text-xs text-slate-500">{getRoleLabel(user?.role)}</p>
         </div>
         <div className="mt-3 space-y-1 text-sm">
-          <MenuButton label="Session preferences" onClick={() => navigate("/notifications")} />
           <MenuButton label="Sign out" tone="danger" onClick={handleSignOut} />
         </div>
       </div>
