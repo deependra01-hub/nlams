@@ -181,7 +181,7 @@ export function NationalDashboard() {
               </div>
               <Badge tone="primary">New</Badge>
             </div>
-            <Button variant="secondary" className="mt-4 border-violet-200 bg-white text-violet-800">
+            <Button variant="secondary" className="mt-4 border-violet-200 bg-white text-violet-800" onClick={() => navigate("/ai")}>
               View AI insights
             </Button>
           </div>

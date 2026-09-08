@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Upload } from "lucide-react";
 import { AppCard } from "../common/AppCard";
 import { Button } from "../common/Button";
@@ -5,6 +6,8 @@ import { Badge } from "../common/Badge";
 import type { DocumentRecord } from "../../types/document.types";
 
 export function DocumentUploader({ document }: { document: DocumentRecord }) {
+  const [prepared, setPrepared] = useState(false);
+
   return (
     <AppCard title="Upload workspace" description="Phase placeholder for controlled document upload and versioning.">
       <div className="flex flex-col gap-4 rounded-2xl border border-dashed border-gov-200 bg-gov-50 p-4">
@@ -27,7 +30,13 @@ export function DocumentUploader({ document }: { document: DocumentRecord }) {
           <Badge tone="neutral">Checksum ready</Badge>
         </div>
 
-        <Button>Prepare upload</Button>
+        {prepared ? (
+          <div className="rounded-2xl border border-emerald-100 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-800">
+            Upload checklist prepared for {document.referenceNo}.
+          </div>
+        ) : null}
+
+        <Button onClick={() => setPrepared(true)}>Prepare upload</Button>
       </div>
     </AppCard>
   );

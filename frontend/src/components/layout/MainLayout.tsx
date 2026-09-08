@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Outlet, useLocation } from "react-router-dom";
-import { Bell, ChevronDown, HelpCircle, Menu, Plus, Sparkles, UserCircle2 } from "lucide-react";
+import { Bell, ChevronDown, Menu, Plus, Sparkles, UserCircle2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useFilterStore } from "../../store/filter.store";
 import { useUiStore } from "../../store/ui.store";
@@ -103,12 +103,12 @@ export function MainLayout() {
                   variant="secondary"
                   leadingIcon={Sparkles}
                   className="hidden border-violet-200 bg-[linear-gradient(90deg,rgba(109,93,252,0.12)_0%,rgba(46,122,240,0.12)_100%)] text-violet-800 sm:inline-flex"
+                  onClick={() => navigate("/ai")}
                 >
                   NLAMS AI
                 </Button>
 
-                <IconButton icon={Plus} label="Create new item" />
-                <IconButton icon={HelpCircle} label="Help center" />
+                <IconButton icon={Plus} label="Create new item" onClick={() => navigate("/projects/create")} />
 
                 <div className="hidden items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-800 sm:flex">
                   <span className="h-2 w-2 rounded-full bg-emerald-500" />

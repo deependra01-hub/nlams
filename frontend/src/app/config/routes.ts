@@ -15,6 +15,14 @@ const ROUTE_HEADERS: Record<string, RouteHeader> = {
     description: "Portfolio overview for acquisition, award, and possession tracking.",
     breadcrumbs: [{ label: "Projects" }],
   },
+  "/projects/create": {
+    title: "Create Project",
+    description: "Draft a new acquisition portfolio entry.",
+    breadcrumbs: [
+      { label: "Projects", to: "/projects" },
+      { label: "Create Project" },
+    ],
+  },
   "/parcels": {
     title: "Parcels",
     description: "Parcel registry and land record verification overview.",

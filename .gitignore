@@ -10,3 +10,4 @@ frontend/*.tsbuildinfo
 .DS_Store
 coverage
 *.log
+tmp/

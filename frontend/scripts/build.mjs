@@ -130,6 +130,10 @@ async function bundleMain(entryPoint, outputFile) {
     platform: "browser",
     outfile: outputFile,
     jsx: "automatic",
+    loader: {
+      ".png": "file",
+    },
+    assetNames: "assets/[name]-[hash]",
     logLevel: "silent",
   });
 }

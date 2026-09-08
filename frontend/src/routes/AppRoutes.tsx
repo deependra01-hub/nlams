@@ -30,6 +30,7 @@ import { Notifications } from "../pages/notifications/Notifications";
 import { Reports } from "../pages/reports/Reports";
 import { Analytics } from "../pages/reports/Analytics";
 import { ProjectDetails } from "../pages/projects/ProjectDetails";
+import { ProjectCreate } from "../pages/projects/ProjectCreate";
 import { ProjectList } from "../pages/projects/ProjectList";
 import { ScenarioCreate } from "../pages/simulator/ScenarioCreate";
 import { ScenarioDetails } from "../pages/simulator/ScenarioDetails";
@@ -62,6 +63,16 @@ export function AppRoutes() {
                 allowedRoles={["central_admin", "state_officer", "district_officer", "project_agency_officer"]}
               >
                 <ProjectList />
+              </RoleRoute>
+            }
+          />
+          <Route
+            path="/projects/create"
+            element={
+              <RoleRoute
+                allowedRoles={["central_admin", "state_officer", "district_officer", "project_agency_officer"]}
+              >
+                <ProjectCreate />
               </RoleRoute>
             }
           />
